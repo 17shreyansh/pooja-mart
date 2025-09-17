@@ -3,10 +3,11 @@ import { Row, Col, Input, Button } from "antd";
 import { InstagramOutlined, FacebookFilled, TwitterOutlined } from "@ant-design/icons";
 import logo from "../../assets/logo.png";
 import bottomStrip from "../../assets/bottom-strip.png";
+import bg from "../../assets/featuredBG.png";
 
 const Footer = () => {
   return (
-    <footer style={{ background: "#fffaf5", color: "#5c1f1f", padding: 0 }}>
+    <footer style={{ background: `url(${bg})`, color: "#5c1f1f", padding: 0 }}>
       {/* Top Decorative Strip */}
       <img
         src={bottomStrip}
@@ -15,55 +16,145 @@ const Footer = () => {
       />
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px 20px" }}>
-        <Row gutter={[32, 32]}>
+        <Row gutter={[32, 32]} align="top">
           {/* Left - Logo & Navigation */}
           <Col xs={24} sm={12} md={8}>
-            <img
-              src={logo}
-              alt="PujaMarts Logo"
-              style={{ height: "60px", marginBottom: "20px" }}
-            />
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <a href="#home" style={{ color: "#5c1f1f", textDecoration: "none" }}>Home</a>
-              <a href="#shop" style={{ color: "#5c1f1f", textDecoration: "none" }}>Shop</a>
-              <a href="#book-pooja" style={{ color: "#5c1f1f", textDecoration: "none" }}>Book a Pooja</a>
-              <a href="#languages" style={{ color: "#5c1f1f", textDecoration: "none" }}>Languages</a>
-              <a href="#contact" style={{ color: "#5c1f1f", textDecoration: "none" }}>Contact Us</a>
+            <div style={{ textAlign: { xs: "center", sm: "left" } }}>
+              <img
+                src={logo}
+                alt="PujaMarts Logo"
+                style={{ height: "60px", marginBottom: "20px" }}
+              />
+            </div>
+            <div style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              gap: "12px",
+              alignItems: { xs: "center", sm: "flex-start" }
+            }}>
+              <a href="#home" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Home</a>
+              <a href="#shop" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Shop</a>
+              <a href="#book-pooja" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Book a Pooja</a>
+              <a href="#languages" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Languages</a>
+              <a href="#contact" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Contact Us</a>
             </div>
           </Col>
 
           {/* Middle - Quick Links */}
           <Col xs={24} sm={12} md={8}>
-            <h4 style={{ fontWeight: "600", marginBottom: "15px" }}>Quick Link</h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <a href="#refund" style={{ color: "#5c1f1f", textDecoration: "none" }}>Return and Refund Policy</a>
-              <a href="#terms" style={{ color: "#5c1f1f", textDecoration: "none" }}>Terms and Conditions</a>
-              <a href="#privacy" style={{ color: "#5c1f1f", textDecoration: "none" }}>Privacy Policy</a>
-              <a href="#shipping" style={{ color: "#5c1f1f", textDecoration: "none" }}>Shipping Policy</a>
-              <a href="#faqs" style={{ color: "#5c1f1f", textDecoration: "none" }}>FAQs</a>
+            <h4 style={{ 
+              fontWeight: "600", 
+              marginBottom: "20px", 
+              fontSize: "16px",
+              textAlign: { xs: "center", sm: "left" }
+            }}>Quick Links</h4>
+            <div style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              gap: "12px",
+              alignItems: { xs: "center", sm: "flex-start" }
+            }}>
+              <a href="#refund" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Return and Refund Policy</a>
+              <a href="#terms" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Terms and Conditions</a>
+              <a href="#privacy" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Privacy Policy</a>
+              <a href="#shipping" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Shipping Policy</a>
+              <a href="#faqs" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>FAQs</a>
             </div>
           </Col>
 
           {/* Right - Newsletter & Social */}
           <Col xs={24} sm={24} md={8}>
-            <h4 style={{ fontWeight: "600", marginBottom: "15px" }}>Sign Up For Newsletters</h4>
-            <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
-              <Input placeholder="Enter your email" style={{ background: "#faebd7", border: "none" }} />
-              <Button type="primary" style={{ background: "#5c1f1f", border: "none" }}>Submit</Button>
+            <h4 style={{ 
+              fontWeight: "600", 
+              marginBottom: "20px", 
+              fontSize: "16px",
+              textAlign: { xs: "center", sm: "left" }
+            }}>Sign Up For Newsletters</h4>
+            <div style={{ 
+              display: "flex", 
+              gap: "8px", 
+              marginBottom: "25px",
+              flexDirection: { xs: "column", sm: "row" }
+            }}>
+              <Input 
+                placeholder="Enter your email" 
+                style={{ 
+                  background: "#faebd7", 
+                  border: "none",
+                  flex: 1
+                }} 
+              />
+              <Button 
+                type="primary" 
+                style={{ 
+                  background: "#5c1f1f", 
+                  border: "none",
+                  minWidth: "80px"
+                }}
+              >
+                Submit
+              </Button>
             </div>
-            <h4 style={{ fontWeight: "600", marginBottom: "10px" }}>Follow Us</h4>
-            <div style={{ display: "flex", gap: "15px", fontSize: "18px" }}>
-              <a href="#instagram" style={{ color: "#5c1f1f" }}><InstagramOutlined /></a>
-              <a href="#facebook" style={{ color: "#5c1f1f" }}><FacebookFilled /></a>
-              <a href="#twitter" style={{ color: "#5c1f1f" }}><TwitterOutlined /></a>
+            <h4 style={{ 
+              fontWeight: "600", 
+              marginBottom: "15px", 
+              fontSize: "16px",
+              textAlign: { xs: "center", sm: "left" }
+            }}>Follow Us</h4>
+            <div style={{ 
+              display: "flex", 
+              gap: "20px", 
+              fontSize: "20px",
+              justifyContent: { xs: "center", sm: "flex-start" }
+            }}>
+              <a href="#instagram" style={{ color: "#5c1f1f", transition: "color 0.3s" }}><InstagramOutlined /></a>
+              <a href="#facebook" style={{ color: "#5c1f1f", transition: "color 0.3s" }}><FacebookFilled /></a>
+              <a href="#twitter" style={{ color: "#5c1f1f", transition: "color 0.3s" }}><TwitterOutlined /></a>
             </div>
           </Col>
         </Row>
       </div>
 
       {/* Bottom Strip */}
-      <div style={{ background: "#5c1f1f", color: "white", textAlign: "center", padding: "10px 0" }}>
-        Terms and Conditions | Privacy Policy | Shipping Policy
+      <div style={{ background: "#5c1f1f", color: "white", padding: "15px 0" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px" }}>
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "space-between", 
+            alignItems: "center",
+            flexDirection: { xs: "column", md: "row" },
+            gap: "10px"
+          }}>
+            <div style={{ 
+              display: "flex", 
+              gap: "15px", 
+              fontSize: "14px",
+              flexWrap: "wrap",
+              justifyContent: "center"
+            }}>
+              <a href="#terms" style={{ color: "white", textDecoration: "none" }}>Terms and Conditions</a>
+              <span>|</span>
+              <a href="#privacy" style={{ color: "white", textDecoration: "none" }}>Privacy Policy</a>
+              <span>|</span>
+              <a href="#shipping" style={{ color: "white", textDecoration: "none" }}>Shipping Policy</a>
+            </div>
+            <div style={{ fontSize: "14px", textAlign: "center" }}>
+              Made with ❤️ and craft by{" "}
+              <a 
+                href="https://affobe.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ 
+                  color: "#faebd7", 
+                  textDecoration: "none", 
+                  fontWeight: "500"
+                }}
+              >
+                Affobe
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );
