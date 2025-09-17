@@ -1,0 +1,117 @@
+import React from 'react';
+import { Button } from 'antd';
+
+const PoojaCard = ({ image, title, subtitle1, subtitle2 }) => {
+  return (
+    <div
+      style={{
+        position: 'relative',
+        borderRadius: '15px',
+        overflow: 'hidden',
+        textAlign: 'left',
+        background: '#F9F6EE',
+        border: 'none',
+        padding: 'clamp(8px, 2vw, 12px)',
+        width: '100%',
+        maxWidth: '280px',
+        minWidth: '160px',
+        margin: '0 auto'
+      }}
+    >
+      {/* Image with fixed portrait ratio */}
+      <div
+        style={{
+          width: '100%',
+          aspectRatio: '3 / 4', // portrait lock
+          borderRadius: '12px',
+          overflow: 'hidden',
+          background: '#FFF6EA'
+        }}
+      >
+        <img
+          src={image}
+          alt={title}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: '12px'
+          }}
+        />
+      </div>
+
+      {/* Text Content */}
+      <div style={{ marginTop: '8px' }}>
+        <h3
+          style={{
+            fontFamily: 'Poppins, sans-serif',
+            color: '#333333',
+            fontWeight: '500',
+            margin: '2px 0',
+            fontSize: 'clamp(12px, 2.5vw, 14px)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px'
+          }}
+        >
+          {title}
+        </h3>
+
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginTop: '6px',
+          gap: '8px'
+        }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p
+              style={{
+                color: '#828282',
+                fontFamily: 'Poppins, sans-serif',
+                margin: '0',
+                fontSize: 'clamp(10px, 2vw, 12px)',
+                lineHeight: '1.2'
+              }}
+            >
+              {subtitle1}
+            </p>
+            <p
+              style={{
+                color: '#828282',
+                fontFamily: 'Poppins, sans-serif',
+                margin: '0',
+                fontSize: 'clamp(10px, 2vw, 12px)',
+                lineHeight: '1.2'
+              }}
+            >
+              {subtitle2}
+            </p>
+          </div>
+          
+          <Button
+            type="primary"
+            size="small"
+            style={{
+              background: '#691B19',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '2px 8px',
+              fontSize: 'clamp(10px, 2vw, 12px)',
+              fontFamily: 'Poppins, sans-serif',
+              fontWeight: '400',
+              color: '#F4E2C9',
+              flexShrink: 0,
+              height: 'auto',
+              minHeight: '24px'
+            }}
+          >
+            Book Now
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PoojaCard;
