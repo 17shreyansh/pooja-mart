@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import featuredBG from '../../assets/featuredBG.png';
 import bottomStrip from '../../assets/bottom-strip.png';
-import ser1 from '../../assets/fp1.jpg';
-import ser2 from '../../assets/fp2.jpg';
-import ser3 from '../../assets/fp3.jpg';
-import ser4 from '../../assets/fp4.jpg';
+import { frontendAPI } from '../../utils/api';
 
 // Add fonts
 const fontStyles = `
@@ -25,28 +23,21 @@ if (!document.querySelector('#featured-fonts')) {
 const { Meta } = Card;
 
 const FeaturedPoojas = () => {
-  const poojas = [
-    {
-      image: ser1,
-      title: 'Ganesh Puja',
-      subtitle: 'Traditional blessing ceremony'
-    },
-    {
-      image: ser2,
-      title: 'Lakshmi Puja',
-      subtitle: 'Prosperity and wealth ritual'
-    },
-    {
-      image: ser3,
-      title: 'Saraswati Puja',
-      subtitle: 'Knowledge and wisdom blessing'
-    },
-    {
-      image: ser4,
-      title: 'Durga Puja',
-      subtitle: 'Divine protection ceremony'
+  const [poojas, setPoojas] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchPoojas();
+  }, []);
+
+  const fetchPoojas = async () => {
+    try {
+      const response = await frontendAPI.getPoojas();
+      setPoojas(response.data.data);
+    } catch (error) {
+      console.error('Error fetching poojas:', error);
     }
-  ];
+  };
 
   return (
     <section 
@@ -86,7 +77,7 @@ const FeaturedPoojas = () => {
                 cover={
                   <div style={{ position: 'relative', overflow: 'visible' }}>
                     <img
-                      src={pooja.image}
+                      src={pooja.image ? `http://localhost:5000${pooja.image}` : '/placeholder.jpg'}
                       alt={pooja.title}
                       style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover', borderRadius: '10px', background: 'none' }}
                     />
@@ -104,8 +95,13 @@ const FeaturedPoojas = () => {
                         fontWeight: '500',
                         fontFamily: 'Poppins, sans-serif'
                       }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate(`/contact?service=${encodeURIComponent(pooja.title)}&type=pooja`);
+                      }}
                     >
-                      Book a Pooja
+                      Book Now
                     </Button>
                   </div>
                 }

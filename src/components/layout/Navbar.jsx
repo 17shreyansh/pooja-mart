@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { Menu, Dropdown, Button, Drawer } from "antd";
-import { DownOutlined, MenuOutlined, CloseOutlined } from "@ant-design/icons";
+import React, { useState, useEffect, useRef } from "react";
+import { Menu, Dropdown, Button, Drawer, Input, AutoComplete } from "antd";
+import { Link, useNavigate } from 'react-router-dom';
+import { DownOutlined, MenuOutlined, CloseOutlined, SearchOutlined } from "@ant-design/icons";
+import { frontendAPI } from '../../utils/api';
 import logo from "../../assets/logo.png";
 import searchIcon from "../../assets/icons/proicons_search.png";
 import userIcon from "../../assets/icons/solar_user-linear.png";
@@ -8,23 +10,96 @@ import cartIcon from "../../assets/icons/solar_cart-3-linear.png";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [categories, setCategories] = useState({});
+  const searchRef = useRef(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (searchValue.length >= 2) {
+      const timeoutId = setTimeout(() => {
+        handleSearch(searchValue);
+      }, 300);
+      return () => clearTimeout(timeoutId);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchValue]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await frontendAPI.getCategories();
+      setCategories(response.data.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const handleSearch = async (query) => {
+    try {
+      const response = await frontendAPI.search({ q: query });
+      const { suggestions } = response.data.data;
+      
+      const options = suggestions.map((item, index) => ({
+        key: index,
+        value: item.text,
+        label: (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>{item.text}</span>
+            <span style={{ fontSize: '12px', color: '#999' }}>{item.type}</span>
+          </div>
+        ),
+        type: item.type
+      }));
+      
+      setSearchResults(options);
+    } catch (error) {
+      console.error('Search error:', error);
+    }
+  };
+
+  const handleSearchSelect = (value, option) => {
+    const type = option.type;
+    if (type === 'service') {
+      navigate('/services');
+    } else if (type === 'pooja') {
+      navigate('/poojas');
+    } else if (type === 'product') {
+      navigate('/shop');
+    }
+    setSearchOpen(false);
+    setSearchValue('');
+  };
+
   const shopMenu = (
     <Menu
-      items={[
-        { key: "1", label: "All Products" },
-        { key: "2", label: "Pooja Samagri" },
-        { key: "3", label: "Gift Items" },
-      ]}
+      items={categories.products?.map((cat, index) => ({
+        key: index,
+        label: <Link to={`/shop?category=${cat}`}>{cat}</Link>
+      })) || []}
     />
   );
 
   const poojaMenu = (
     <Menu
-      items={[
-        { key: "1", label: "Satyanarayan Pooja" },
-        { key: "2", label: "Griha Pravesh" },
-        { key: "3", label: "Wedding Pooja" },
-      ]}
+      items={categories.poojas?.map((cat, index) => ({
+        key: index,
+        label: <Link to={`/poojas?category=${cat}`}>{cat}</Link>
+      })) || []}
+    />
+  );
+
+  const servicesMenu = (
+    <Menu
+      items={categories.services?.map((cat, index) => ({
+        key: index,
+        label: <Link to={`/services?category=${cat}`}>{cat}</Link>
+      })) || []}
     />
   );
 
@@ -61,28 +136,30 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         <div className="desktop-menu" style={{ display: "flex", gap: "50px", fontSize: "15px", fontFamily: "'Poppins', sans-serif" , fontWeight: "400"}}>
-          <a href="/" style={{ color: "#701a1a", textDecoration: "none" }}>
+          <Link to="/" style={{ color: "#701a1a", textDecoration: "none" }}>
             Home
-          </a>
+          </Link>
 
-          <Dropdown overlay={shopMenu} placement="bottom">
-            <a href="/" style={{ color: "#701a1a" }}>
-              Shop <DownOutlined style={{ fontSize: "12px" }} />
-            </a>
+          <Dropdown overlay={shopMenu} trigger={['hover']}>
+            <Link to="/shop" style={{ color: "#701a1a", textDecoration: "none" }}>
+              Shop <DownOutlined style={{ fontSize: '10px' }} />
+            </Link>
           </Dropdown>
 
-          <Dropdown overlay={poojaMenu} placement="bottom">
-            <a href="/" style={{ color: "#701a1a" }}>
-              Book a Pooja <DownOutlined style={{ fontSize: "12px" }} />
-            </a>
+          <Dropdown overlay={poojaMenu} trigger={['hover']}>
+            <Link to="/poojas" style={{ color: "#701a1a", textDecoration: "none" }}>
+              Book a Pooja <DownOutlined style={{ fontSize: '10px' }} />
+            </Link>
           </Dropdown>
 
-          <a href="/" style={{ color: "#701a1a" }}>
-            Vastu and Numerology
-          </a>
-          <a href="/" style={{ color: "#701a1a" }}>
+          <Dropdown overlay={servicesMenu} trigger={['hover']}>
+            <Link to="/services" style={{ color: "#701a1a", textDecoration: "none" }}>
+              Services <DownOutlined style={{ fontSize: '10px' }} />
+            </Link>
+          </Dropdown>
+          <Link to="/contact" style={{ color: "#701a1a", textDecoration: "none" }}>
             Contact Us
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -105,22 +182,53 @@ const Navbar = () => {
             fontWeight: "400",
           }}
         >
-          <img src={searchIcon} alt="Search" style={{ width: "18px", height: "18px" }} />
-          <img src={userIcon} alt="User" style={{ width: "18px", height: "18px" }} />
-          <img src={cartIcon} alt="Cart" style={{ width: "18px", height: "18px" }} />
-
-          <a href="/login" style={{ color: "#701a1a" }}>
-            Signup/login
-          </a>
-          <a href="/language" style={{ color: "#701a1a" }}>
-            Language
-          </a>
+          <div style={{ position: 'relative' }}>
+            <SearchOutlined 
+              style={{ 
+                fontSize: '18px', 
+                color: '#701a1a', 
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onClick={() => {
+                setSearchOpen(!searchOpen);
+                if (!searchOpen) {
+                  setTimeout(() => searchRef.current?.focus(), 100);
+                }
+              }}
+            />
+            
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              right: 0,
+              width: searchOpen ? '300px' : '0px',
+              opacity: searchOpen ? 1 : 0,
+              overflow: 'hidden',
+              transition: 'all 0.3s ease',
+              zIndex: 1000,
+              marginTop: '10px'
+            }}>
+              <AutoComplete
+                ref={searchRef}
+                value={searchValue}
+                onChange={setSearchValue}
+                onSelect={handleSearchSelect}
+                options={searchResults}
+                placeholder="Search..."
+                style={{ width: '100%' }}
+                size="large"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Mobile Icons */}
         <div className="mobile-icons" style={{ display: "none", gap: "15px", alignItems: "center" }}>
-          <img src={searchIcon} alt="Search" style={{ width: "18px", height: "18px" }} />
-          <img src={cartIcon} alt="Cart" style={{ width: "18px", height: "18px" }} />
+          <SearchOutlined 
+            style={{ fontSize: '18px', color: '#701a1a', cursor: 'pointer' }}
+            onClick={() => setMobileMenuOpen(true)}
+          />
         </div>
       </div>
 
@@ -132,7 +240,7 @@ const Navbar = () => {
         open={mobileMenuOpen}
         width={280}
         closable={false}
-        bodyStyle={{ padding: 0 }}
+        styles={{ body: { padding: 0 } }}
       >
         <div style={{ padding: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
@@ -144,44 +252,37 @@ const Navbar = () => {
           </div>
           
           <div style={{ display: "flex", flexDirection: "column", gap: "25px", fontFamily: "'Poppins', sans-serif", fontWeight: "400" }}>
-            <a href="/" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }}>
+            <Link to="/" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }} onClick={() => setMobileMenuOpen(false)}>
               Home
-            </a>
+            </Link>
             
-            <div>
-              <div style={{ color: "#701a1a", fontSize: "16px", marginBottom: "10px" }}>Shop</div>
-              <div style={{ paddingLeft: "15px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                <a href="/" style={{ color: "#666", textDecoration: "none", fontSize: "14px" }}>All Products</a>
-                <a href="/" style={{ color: "#666", textDecoration: "none", fontSize: "14px" }}>Pooja Samagri</a>
-                <a href="/" style={{ color: "#666", textDecoration: "none", fontSize: "14px" }}>Gift Items</a>
-              </div>
+            <div style={{ marginBottom: '20px' }}>
+              <AutoComplete
+                value={searchValue}
+                onChange={setSearchValue}
+                onSelect={handleSearchSelect}
+                options={searchResults}
+                placeholder="Search services, poojas, products..."
+                style={{ width: '100%' }}
+                size="large"
+              />
             </div>
             
-            <div>
-              <div style={{ color: "#701a1a", fontSize: "16px", marginBottom: "10px" }}>Book a Pooja</div>
-              <div style={{ paddingLeft: "15px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                <a href="/" style={{ color: "#666", textDecoration: "none", fontSize: "14px" }}>Satyanarayan Pooja</a>
-                <a href="/" style={{ color: "#666", textDecoration: "none", fontSize: "14px" }}>Griha Pravesh</a>
-                <a href="/" style={{ color: "#666", textDecoration: "none", fontSize: "14px" }}>Wedding Pooja</a>
-              </div>
-            </div>
+            <Link to="/shop" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }} onClick={() => setMobileMenuOpen(false)}>
+              Shop
+            </Link>
             
-            <a href="/" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }}>
-              Vastu and Numerology
-            </a>
-            <a href="/" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }}>
+            <Link to="/poojas" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }} onClick={() => setMobileMenuOpen(false)}>
+              Book a Pooja
+            </Link>
+            
+            <Link to="/services" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }} onClick={() => setMobileMenuOpen(false)}>
+              Services
+            </Link>
+            
+            <Link to="/contact" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }} onClick={() => setMobileMenuOpen(false)}>
               Contact Us
-            </a>
-            
-            <hr style={{ margin: "20px 0", border: "none", borderTop: "1px solid #eee" }} />
-            
-            <a href="/login" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }}>
-              <img src={userIcon} alt="User" style={{ width: "16px", height: "16px", marginRight: "8px" }} />
-              Signup/Login
-            </a>
-            <a href="/language" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }}>
-              Language
-            </a>
+            </Link>
           </div>
         </div>
       </Drawer>

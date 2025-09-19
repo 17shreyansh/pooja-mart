@@ -1,11 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'antd';
 import featuredBG from '../../assets/featuredBG.png';
 import PoojaCard from '../common/PoojaCard';
-import ser1 from '../../assets/fp1.jpg';
-import ser2 from '../../assets/fp2.jpg';
-import ser3 from '../../assets/fp3.jpg';
-import ser4 from '../../assets/fp4.jpg';
+import { frontendAPI } from '../../utils/api';
 
 // Add fonts
 const fontStyles = `
@@ -21,32 +18,20 @@ if (!document.querySelector('#pooja-collection-fonts')) {
 }
 
 const PoojaCollection = () => {
-  const poojas = [
-    {
-      image: ser1,
-      title: 'Ganesh Puja',
-      subtitle1: 'Traditional blessing ceremony',
-      subtitle2: 'Remove obstacles and bring prosperity'
-    },
-    {
-      image: ser2,
-      title: 'Lakshmi Puja',
-      subtitle1: 'Prosperity and wealth ritual',
-      subtitle2: 'Attract abundance and fortune'
-    },
-    {
-      image: ser3,
-      title: 'Saraswati Puja',
-      subtitle1: 'Knowledge and wisdom blessing',
-      subtitle2: 'Enhance learning and creativity'
-    },
-    {
-      image: ser4,
-      title: 'Durga Puja',
-      subtitle1: 'Divine protection ceremony',
-      subtitle2: 'Strength and courage blessing'
+  const [poojas, setPoojas] = useState([]);
+
+  useEffect(() => {
+    fetchPoojas();
+  }, []);
+
+  const fetchPoojas = async () => {
+    try {
+      const response = await frontendAPI.getPoojaCollection();
+      setPoojas(response.data.data);
+    } catch (error) {
+      console.error('Error fetching pooja collection:', error);
     }
-  ];
+  };
 
   return (
     <section 
@@ -80,7 +65,7 @@ const PoojaCollection = () => {
             <Col key={index} xs={12} sm={12} md={6} lg={6} xl={6}>
               <div style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '0 4px' }}>
                 <PoojaCard
-                  image={pooja.image}
+                  image={pooja.image ? `http://localhost:5000${pooja.image}` : '/placeholder.jpg'}
                   title={pooja.title}
                   subtitle1={pooja.subtitle1}
                   subtitle2={pooja.subtitle2}

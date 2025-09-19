@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import TestimonialCard from '../common/TestimonialCard';
+import { frontendAPI } from '../../utils/api';
 
 // Add fonts
 const fontStyles = `
@@ -19,24 +20,20 @@ if (!document.querySelector('#testimonials-fonts')) {
 }
 
 const Testimonials = () => {
-  const testimonials = [
-    {
-      testimonial: "The puja service was absolutely divine. The pandit was knowledgeable and performed every ritual with utmost devotion.",
-      author: "Priya Sharma"
-    },
-    {
-      testimonial: "Excellent service! The arrangements were perfect and the spiritual experience was truly enriching for our family.",
-      author: "Rajesh Kumar"
-    },
-    {
-      testimonial: "Professional and authentic puja services. Highly recommend for anyone seeking genuine spiritual guidance.",
-      author: "Meera Patel"
-    },
-    {
-      testimonial: "Amazing experience! The rituals were performed with great care and the spiritual atmosphere was truly divine.",
-      author: "Amit Singh"
+  const [testimonials, setTestimonials] = useState([]);
+
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
+
+  const fetchTestimonials = async () => {
+    try {
+      const response = await frontendAPI.getTestimonials();
+      setTestimonials(response.data.data);
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
     }
-  ];
+  };
 
   return (
     <section 

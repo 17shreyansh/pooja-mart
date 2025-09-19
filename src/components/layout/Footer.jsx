@@ -1,9 +1,78 @@
-import React from "react";
-import { Row, Col, Input, Button } from "antd";
+import React, { useState } from "react";
+import { Row, Col, Input, Button, message } from "antd";
+import { frontendAPI } from '../../utils/api';
+import { Link } from 'react-router-dom';
 import { InstagramOutlined, FacebookFilled, TwitterOutlined } from "@ant-design/icons";
 import logo from "../../assets/logo.png";
 import bottomStrip from "../../assets/bottom-strip.png";
 import bg from "../../assets/featuredBG.png";
+import ThankYouMessage from '../common/ThankYouMessage';
+
+const NewsletterForm = () => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!email) {
+      message.error('Please enter your email');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await frontendAPI.subscribeNewsletter(email);
+      setShowThankYou(true);
+      setEmail('');
+    } catch (error) {
+      message.error(error.response?.data?.message || 'Failed to subscribe');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <ThankYouMessage 
+        visible={showThankYou}
+        onClose={() => setShowThankYou(false)}
+        title="Welcome to Our Newsletter!"
+        message="Thank you for subscribing! You'll receive the latest updates about our poojas, services, and special offers."
+        type="newsletter"
+      />
+      <div style={{ 
+        display: "flex", 
+        gap: "8px", 
+        marginBottom: "25px",
+        flexDirection: { xs: "column", sm: "row" }
+      }}>
+      <Input 
+        placeholder="Enter your email" 
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        onPressEnter={handleSubmit}
+        style={{ 
+          background: "#faebd7", 
+          border: "none",
+          flex: 1
+        }} 
+      />
+      <Button 
+        type="primary" 
+        loading={loading}
+        onClick={handleSubmit}
+        style={{ 
+          background: "#5c1f1f", 
+          border: "none",
+          minWidth: "80px"
+        }}
+      >
+        Submit
+      </Button>
+      </div>
+    </>
+  );
+};
 
 const Footer = () => {
   return (
@@ -32,11 +101,11 @@ const Footer = () => {
               gap: "12px",
               alignItems: { xs: "center", sm: "flex-start" }
             }}>
-              <a href="#home" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Home</a>
-              <a href="#shop" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Shop</a>
-              <a href="#book-pooja" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Book a Pooja</a>
-              <a href="#languages" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Languages</a>
-              <a href="#contact" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Contact Us</a>
+              <Link to="/" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Home</Link>
+              <Link to="/shop" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Shop</Link>
+              <Link to="/poojas" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Book a Pooja</Link>
+              <Link to="/services" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Services</Link>
+              <Link to="/contact" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Contact Us</Link>
             </div>
           </Col>
 
@@ -54,11 +123,11 @@ const Footer = () => {
               gap: "12px",
               alignItems: { xs: "center", sm: "flex-start" }
             }}>
-              <a href="#refund" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Return and Refund Policy</a>
-              <a href="#terms" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Terms and Conditions</a>
-              <a href="#privacy" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Privacy Policy</a>
-              <a href="#shipping" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Shipping Policy</a>
-              <a href="#faqs" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>FAQs</a>
+              <Link to="/policy/return-refund-policy" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Return and Refund Policy</Link>
+              <Link to="/policy/terms-conditions" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Terms and Conditions</Link>
+              <Link to="/policy/privacy-policy" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Privacy Policy</Link>
+              <Link to="/policy/shipping-policy" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Shipping Policy</Link>
+              <Link to="/contact" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>FAQs</Link>
             </div>
           </Col>
 
@@ -70,31 +139,7 @@ const Footer = () => {
               fontSize: "16px",
               textAlign: { xs: "center", sm: "left" }
             }}>Sign Up For Newsletters</h4>
-            <div style={{ 
-              display: "flex", 
-              gap: "8px", 
-              marginBottom: "25px",
-              flexDirection: { xs: "column", sm: "row" }
-            }}>
-              <Input 
-                placeholder="Enter your email" 
-                style={{ 
-                  background: "#faebd7", 
-                  border: "none",
-                  flex: 1
-                }} 
-              />
-              <Button 
-                type="primary" 
-                style={{ 
-                  background: "#5c1f1f", 
-                  border: "none",
-                  minWidth: "80px"
-                }}
-              >
-                Submit
-              </Button>
-            </div>
+            <NewsletterForm />
             <h4 style={{ 
               fontWeight: "600", 
               marginBottom: "15px", 
@@ -132,11 +177,11 @@ const Footer = () => {
               flexWrap: "wrap",
               justifyContent: "center"
             }}>
-              <a href="#terms" style={{ color: "white", textDecoration: "none" }}>Terms and Conditions</a>
+              <Link to="/policy/terms-conditions" style={{ color: "white", textDecoration: "none" }}>Terms and Conditions</Link>
               <span>|</span>
-              <a href="#privacy" style={{ color: "white", textDecoration: "none" }}>Privacy Policy</a>
+              <Link to="/policy/privacy-policy" style={{ color: "white", textDecoration: "none" }}>Privacy Policy</Link>
               <span>|</span>
-              <a href="#shipping" style={{ color: "white", textDecoration: "none" }}>Shipping Policy</a>
+              <Link to="/policy/shipping-policy" style={{ color: "white", textDecoration: "none" }}>Shipping Policy</Link>
             </div>
             <div style={{ fontSize: "14px", textAlign: "center" }}>
               Made with ❤️ and craft by{" "}

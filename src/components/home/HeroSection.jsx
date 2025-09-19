@@ -1,11 +1,27 @@
 import React from "react";
 import { Row, Col, Input, Button, Form } from "antd";
+import { useNavigate } from 'react-router-dom';
 import heroImage from "../../assets/hero-bg.jpg";
 import banner from "../../assets/hero-1.png";
 import "./HeroSection.css";
 
 const HeroSection = () => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
+
+  const handleSubmit = (values) => {
+    if (!values.city && !values.poojaName) {
+      navigate('/contact');
+      return;
+    }
+    
+    const params = new URLSearchParams();
+    if (values.city) params.append('city', values.city);
+    if (values.poojaName) params.append('service', values.poojaName);
+    params.append('type', 'hero-form');
+    
+    navigate(`/contact?${params.toString()}`);
+  };
 
   return (
     <section className="hero-section" style={{
@@ -36,7 +52,7 @@ const HeroSection = () => {
         {/* Right Form Section */}
         <Col xs={24} md={12}>
           <div className="hero-form-container">
-            <Form form={form} layout="vertical">
+            <Form form={form} layout="vertical" onFinish={handleSubmit}>
               <Form.Item name="city">
                 <Input
                   placeholder="Enter Your city"
@@ -58,6 +74,7 @@ const HeroSection = () => {
                   type="primary"
                   size="large"
                   className="hero-button"
+                  htmlType="submit"
                 >
                   Book a Pooja
                 </Button>

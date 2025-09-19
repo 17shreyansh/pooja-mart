@@ -109,9 +109,9 @@ const HowItWorks = () => {
       </Row>
 
       {/* Buttons */}
-      <Row gutter={[16, 16]} justify="center">
+      <Row gutter={[16, 16]} justify="center" style={{ marginTop: "40px" }}>
         {buttons.map((btn, i) => (
-          <Col key={i}>
+          <Col xs={12} sm={8} md={6} lg={6} key={i}>
             <Button
               style={{
                 borderRadius: "10px",
@@ -120,6 +120,8 @@ const HowItWorks = () => {
                 border: "1px solid #6B1E1E",
                 color: "#6B1E1E",
                 fontFamily: "Poppins",
+                width: "100%",
+                fontSize: "14px",
               }}
             >
               {btn}

@@ -1,8 +1,10 @@
 import React from 'react';
 import { Row, Col, Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import featuredBG from '../../assets/ctaBG.jpg';
 
 const BookPoojaCTA = () => {
+  const navigate = useNavigate();
   return (
     <section
       style={{
@@ -51,6 +53,7 @@ const BookPoojaCTA = () => {
                   height: 'auto',
                   minHeight: '40px'
                 }}
+                onClick={() => navigate('/contact')}
               >
                 Book a Pooja
               </Button>

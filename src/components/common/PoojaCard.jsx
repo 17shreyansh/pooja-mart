@@ -1,7 +1,9 @@
 import React from 'react';
 import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const PoojaCard = ({ image, title, subtitle1, subtitle2 }) => {
+  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -104,6 +106,11 @@ const PoojaCard = ({ image, title, subtitle1, subtitle2 }) => {
               flexShrink: 0,
               height: 'auto',
               minHeight: '24px'
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              navigate(`/contact?service=${encodeURIComponent(title)}&type=product`);
             }}
           >
             Book Now

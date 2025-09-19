@@ -1,12 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
-import ser1 from '../../assets/ser1.jpg';
-import ser2 from '../../assets/ser2.jpg';
-import ser3 from '../../assets/ser3.jpg';
-import ser4 from '../../assets/ser4.jpg';
-import ser5 from '../../assets/ser5.jpg';
+import { frontendAPI } from '../../utils/api';
 
 // Add fonts
 const fontStyles = `
@@ -24,33 +21,21 @@ if (!document.querySelector('#service-fonts')) {
 const { Meta } = Card;
 
 const OurServices = () => {
-  const services = [
-    {
-      image: ser1,
-      title: 'Pandit Ji',
-      subtitle: 'Sub title text'
-    },
-    {
-      image: ser2,
-      title: 'Visarjan',
-      subtitle: 'Sub title text'
-    },
-    {
-      image: ser3,
-      title: 'Vastu and Numerology',
-      subtitle: 'Sub title text'
-    },
-    {
-      image: ser4,
-      title: 'Puja Samagri',
-      subtitle: 'Sub title text'
-    },
-    {
-      image: ser5,
-      title: 'Puja Samagri',
-      subtitle: 'Sub title text'
+  const [services, setServices] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      const response = await frontendAPI.getServices();
+      setServices(response.data.data);
+    } catch (error) {
+      console.error('Error fetching services:', error);
     }
-  ];
+  };
 
   return (
     <section className="our-services" style={{ padding: '50px 0', background: '#fff', fontFamily: 'Poppins, sans-serif' }}>
@@ -81,7 +66,7 @@ const OurServices = () => {
                 cover={
                   <div style={{ position: 'relative', overflow: 'visible' }}>
                     <img
-                      src={service.image}
+                      src={service.image ? `http://localhost:5000${service.image}` : '/placeholder.jpg'}
                       alt={service.title}
                       style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '20px' }}
                     />
@@ -99,8 +84,13 @@ const OurServices = () => {
                         fontWeight: '500',
                         fontFamily: 'Poppins, sans-serif'
                       }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate(`/contact?service=${encodeURIComponent(service.title)}&type=service`);
+                      }}
                     >
-                      Book a Pooja
+                      Book Now
                     </Button>
                   </div>
                 }
