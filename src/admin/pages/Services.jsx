@@ -82,7 +82,7 @@ const Services = () => {
       title: 'Image',
       dataIndex: 'image',
       key: 'image',
-      render: (image) => image ? <img src={`http://localhost:5000${image}`} alt="" style={{ width: 50, height: 50, objectFit: 'cover' }} /> : 'No image'
+      render: (image) => image ? <img src={`${import.meta.env.VITE_API_BASE_URL}${image}`} alt="" style={{ width: 50, height: 50, objectFit: 'cover' }} /> : 'No image'
     },
     {
       title: 'Actions',

@@ -232,7 +232,7 @@ const Shop = () => {
                   bodyStyle={{ padding: 0 }}
                 >
                   <PoojaCard
-                    image={item.image ? `http://localhost:5000${item.image}` : '/placeholder.jpg'}
+                    image={item.image ? `${import.meta.env.VITE_API_BASE_URL}${item.image}` : '/placeholder.jpg'}
                     title={item.title}
                     subtitle1={item.subtitle1}
                     subtitle2={item.subtitle2}

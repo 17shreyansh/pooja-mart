@@ -146,7 +146,7 @@ const Poojas = () => {
                   cover={
                     <div style={{ position: 'relative', overflow: 'visible' }}>
                       <img
-                        src={pooja.image ? `http://localhost:5000${pooja.image}` : '/placeholder.jpg'}
+                        src={pooja.image ? `${import.meta.env.VITE_API_BASE_URL}${pooja.image}` : '/placeholder.jpg'}
                         alt={pooja.title}
                         style={{ 
                           width: '100%', 

@@ -66,7 +66,7 @@ const OurServices = () => {
                 cover={
                   <div style={{ position: 'relative', overflow: 'visible' }}>
                     <img
-                      src={service.image ? `http://localhost:5000${service.image}` : '/placeholder.jpg'}
+                      src={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : '/placeholder.jpg'}
                       alt={service.title}
                       style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '20px' }}
                     />
