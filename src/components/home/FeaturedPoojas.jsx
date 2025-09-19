@@ -6,6 +6,7 @@ import 'swiper/css';
 import featuredBG from '../../assets/featuredBG.png';
 import bottomStrip from '../../assets/bottom-strip.png';
 import { frontendAPI } from '../../utils/api';
+import { API_BASE_URL } from '../../config/api';
 
 // Add fonts
 const fontStyles = `
@@ -77,7 +78,7 @@ const FeaturedPoojas = () => {
                 cover={
                   <div style={{ position: 'relative', overflow: 'visible' }}>
                     <img
-                      src={pooja.image ? `${import.meta.env.VITE_API_BASE_URL}${pooja.image}` : '/placeholder.jpg'}
+                      src={pooja.image ? `${API_BASE_URL}${pooja.image}` : '/placeholder.jpg'}
                       alt={pooja.title}
                       style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover', borderRadius: '10px', background: 'none' }}
                     />

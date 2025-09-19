@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, Upload, Popconfirm, App } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import { poojaCollectionAPI } from '../utils/api';
+import { API_BASE_URL } from '../../config/api';
 
 const PoojaCollection = () => {
   const { message } = App.useApp();
@@ -72,7 +73,7 @@ const PoojaCollection = () => {
       title: 'Image',
       dataIndex: 'image',
       key: 'image',
-      render: (image) => image ? <img src={`${import.meta.env.VITE_API_BASE_URL}${image}`} alt="" style={{ width: 50, height: 50, objectFit: 'cover' }} /> : 'No image'
+      render: (image) => image ? <img src={`${API_BASE_URL}${image}`} alt="" style={{ width: 50, height: 50, objectFit: 'cover' }} /> : 'No image'
     },
     {
       title: 'Actions',
