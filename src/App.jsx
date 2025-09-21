@@ -16,6 +16,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import UserDashboard from './pages/UserDashboard';
 import AdminApp from './admin/AdminApp';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -42,16 +43,16 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
-            <Route path="/service/:id" element={<ServiceDetail />} />
+            <Route path="/service/:slug" element={<ServiceDetail />} />
             <Route path="/poojas" element={<Poojas />} />
-            <Route path="/pooja/:id" element={<PoojaDetail />} />
+            <Route path="/pooja/:slug" element={<PoojaDetail />} />
             <Route path="/shop" element={<Shop />} />
-            <Route path="/collection/:id" element={<CollectionDetail />} />
+            <Route path="/collection/:slug" element={<CollectionDetail />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/policy/:slug" element={<PolicyPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/user/dashboard" element={<UserDashboard />} />
+            <Route path="/user/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
           </Routes>
         </main>
         <Footer />

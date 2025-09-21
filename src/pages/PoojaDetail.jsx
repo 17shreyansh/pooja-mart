@@ -1,27 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Row, Col, Spin, Tag } from 'antd';
-import { ArrowLeftOutlined, CalendarOutlined, StarOutlined } from '@ant-design/icons';
-import { frontendAPI } from '../utils/api';
+import { ArrowLeftOutlined, CalendarOutlined, StarOutlined, EditOutlined } from '@ant-design/icons';
+import { frontendAPI, testimonialsAPI } from '../utils/api';
+import { Form, Input, Rate, Modal, message } from 'antd';
 import featuredBG from '../assets/featuredBG.png';
 import bottomStrip from '../assets/bottom-strip.png';
 
 const PoojaDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [pooja, setPooja] = useState(null);
+  const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [testimonialModalVisible, setTestimonialModalVisible] = useState(false);
+  const [testimonialForm] = Form.useForm();
 
   useEffect(() => {
     fetchPoojaDetail();
-  }, [id]);
+  }, [slug]);
 
   const fetchPoojaDetail = async () => {
     try {
-      const response = await frontendAPI.getPoojaById(id);
-      setPooja(response.data.data);
+      const poojaResponse = await frontendAPI.getPoojaBySlug(slug);
+      setPooja(poojaResponse.data.data);
+      
+      // Fetch testimonials for this specific pooja
+      const testimonialsResponse = await testimonialsAPI.getAll({ service: poojaResponse.data.data.title });
+      setTestimonials(testimonialsResponse.data.data || []);
     } catch (error) {
-      console.error('Error fetching pooja details:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
@@ -449,10 +457,7 @@ const PoojaDetail = () => {
           </h2>
           
           <Row gutter={[24, 24]}>
-            {[
-              { name: 'Priya Sharma', text: 'The pooja was performed with utmost devotion and authenticity. Highly recommended!', rating: 5 },
-              { name: 'Rajesh Kumar', text: 'Professional service and experienced pandits. Very satisfied with the experience.', rating: 5 }
-            ].map((testimonial, index) => (
+            {testimonials.slice(0, 4).map((testimonial, index) => (
               <Col xs={24} md={12} key={index}>
                 <div style={{
                   background: '#fff',
@@ -474,21 +479,115 @@ const PoojaDetail = () => {
                     marginBottom: '16px',
                     fontStyle: 'italic'
                   }}>
-                    "{testimonial.text}"
+                    "{testimonial.testimonial}"
                   </p>
                   <div style={{
                     fontSize: '14px',
                     fontWeight: '600',
                     color: '#691B19'
                   }}>
-                    - {testimonial.name}
+                    - {testimonial.user?.name || 'User'}
                   </div>
                 </div>
               </Col>
             ))}
           </Row>
+          
+          <div style={{ textAlign: 'center', marginTop: '40px' }}>
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => {
+                const token = localStorage.getItem('userToken');
+                if (!token) {
+                  message.warning('Please login to write a review');
+                  navigate('/login');
+                  return;
+                }
+                setTestimonialModalVisible(true);
+              }}
+              style={{
+                background: '#691B19',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontWeight: '500'
+              }}
+            >
+              Write a Review
+            </Button>
+          </div>
         </div>
       </section>
+      
+      {/* Testimonial Modal */}
+      <Modal
+        title="Share Your Experience"
+        open={testimonialModalVisible}
+        onCancel={() => setTestimonialModalVisible(false)}
+        footer={null}
+        width={600}
+      >
+        <Form 
+          form={testimonialForm} 
+          onFinish={async (values) => {
+            try {
+              await testimonialsAPI.create({
+                ...values,
+                service: pooja.title
+              });
+              message.success('Thank you! Your review has been submitted successfully.');
+              setTestimonialModalVisible(false);
+              testimonialForm.resetFields();
+            } catch (error) {
+              if (error.response?.status === 401) {
+                message.error('Please login to write a review');
+                navigate('/login');
+              } else if (error.response?.status === 400) {
+                message.error(error.response.data.message);
+              } else {
+                message.error('Failed to submit review');
+              }
+            }
+          }} 
+          layout="vertical"
+        >
+
+          
+          <Form.Item
+            name="rating"
+            label="Rating"
+            rules={[{ required: true, message: 'Please provide a rating' }]}
+          >
+            <Rate />
+          </Form.Item>
+          
+          <Form.Item
+            name="testimonial"
+            label="Your Review"
+            rules={[{ required: true, message: 'Please share your experience' }]}
+          >
+            <Input.TextArea 
+              rows={4} 
+              placeholder="Share your experience with this pooja..."
+            />
+          </Form.Item>
+          
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                background: '#691B19',
+                border: 'none',
+                width: '100%'
+              }}
+            >
+              Submit Review
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
 
       {/* CTA Section */}
       <section style={{

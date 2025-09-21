@@ -34,6 +34,7 @@ const AdminLayout = ({ children, onLogout, admin }) => {
     if (path.includes('/services')) return 'services';
     if (path.includes('/poojas')) return 'poojas';
     if (path.includes('/collections')) return 'collections';
+    if (path.includes('/offers')) return 'offers';
     if (path.includes('/user-testimonials')) return 'user-testimonials';
     if (path.includes('/testimonials')) return 'testimonials';
     if (path.includes('/leads')) return 'leads';
@@ -62,6 +63,7 @@ const AdminLayout = ({ children, onLogout, admin }) => {
     { key: 'services', icon: <ToolOutlined />, label: 'Services' },
     { key: 'poojas', icon: <StarOutlined />, label: 'Poojas' },
     { key: 'collections', icon: <ShoppingOutlined />, label: 'Collections' },
+    { key: 'offers', icon: <StarOutlined />, label: 'Festive Offers' },
     { key: 'testimonials', icon: <MessageOutlined />, label: 'Testimonials' },
     { key: 'user-testimonials', icon: <UserOutlined />, label: 'User Reviews' },
     { key: 'faqs', icon: <QuestionCircleOutlined />, label: 'FAQs' },

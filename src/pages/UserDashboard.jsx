@@ -19,10 +19,8 @@ const UserDashboard = () => {
     const userData = localStorage.getItem('user');
     if (userData) {
       setUser(JSON.parse(userData));
-    } else {
-      navigate('/login');
     }
-  }, [navigate]);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('userToken');

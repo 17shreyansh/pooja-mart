@@ -42,7 +42,7 @@ const Shop = () => {
       if (searchTerm) params.search = searchTerm;
       if (selectedCategory) params.category = selectedCategory;
       
-      const response = await frontendAPI.getPoojaCollection(params);
+      const response = await frontendAPI.getCollections(params);
       setItems(response.data.data);
       setCategories(response.data.categories || []);
     } catch (error) {
@@ -221,7 +221,7 @@ const Shop = () => {
               <Col xs={24} sm={12} md={8} lg={6} key={item._id}>
                 <Card
                   hoverable
-                  onClick={() => navigate(`/collection/${item._id}`)}
+                  onClick={() => navigate(`/collection/${item.slug}`)}
                   cover={
                     <div style={{ position: 'relative', overflow: 'visible' }}>
                       <img
@@ -293,26 +293,16 @@ const Shop = () => {
                     }}>
                       {item.description}
                     </p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      {item.price && (
-                        <div style={{
-                          fontSize: '18px',
-                          fontWeight: '600',
-                          color: '#691B19'
-                        }}>
-                          ₹{item.price}
-                        </div>
-                      )}
-                      {item.stock !== undefined && (
-                        <div style={{
-                          fontSize: '12px',
-                          color: item.stock > 0 ? '#52c41a' : '#ff4d4f',
-                          fontWeight: '500'
-                        }}>
-                          {item.stock > 0 ? `${item.stock} left` : 'Out of stock'}
-                        </div>
-                      )}
-                    </div>
+                    {item.price && (
+                      <div style={{
+                        fontSize: '18px',
+                        fontWeight: '600',
+                        color: '#691B19',
+                        textAlign: 'center'
+                      }}>
+                        ₹{item.price}
+                      </div>
+                    )}
                   </div>
                 </Card>
               </Col>

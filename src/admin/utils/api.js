@@ -110,4 +110,14 @@ export const userAuthAPI = {
   changePassword: (data) => userApi.put('/user-auth/change-password', data),
 };
 
+export const offersAPI = {
+  getAll: () => api.get('/offers'),
+  getSlider: () => api.get('/offers/slider'),
+  getPopup: () => api.get('/offers/popup'),
+  getAllAdmin: (params) => api.get('/offers/admin', { params }),
+  create: (data) => api.post('/offers', data),
+  update: (id, data) => api.put(`/offers/${id}`, data),
+  delete: (id) => api.delete(`/offers/${id}`),
+};
+
 export const adminAPI = api;

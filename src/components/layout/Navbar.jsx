@@ -116,8 +116,22 @@ const Navbar = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await frontendAPI.getCategories();
-      setCategories(response.data.data);
+      // Get categories from existing data endpoints
+      const [poojas, services, collections] = await Promise.all([
+        frontendAPI.getPoojas(),
+        frontendAPI.getServices(),
+        frontendAPI.getCollections()
+      ]);
+      
+      const poojaCategories = [...new Set(poojas.data.data.map(p => p.category))];
+      const serviceCategories = [...new Set(services.data.data.map(s => s.category))];
+      const productCategories = [...new Set(collections.data.data.map(c => c.category))];
+      
+      setCategories({
+        poojas: poojaCategories,
+        services: serviceCategories,
+        products: productCategories
+      });
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -159,32 +173,14 @@ const Navbar = () => {
     setSearchValue('');
   };
 
-  const shopMenu = (
-    <Menu
-      items={categories.products?.map((cat, index) => ({
-        key: index,
-        label: <Link to={`/shop?category=${cat}`}>{cat}</Link>
-      })) || []}
-    />
-  );
-
-  const poojaMenu = (
-    <Menu
-      items={categories.poojas?.map((cat, index) => ({
-        key: index,
-        label: <Link to={`/poojas?category=${cat}`}>{cat}</Link>
-      })) || []}
-    />
-  );
-
-  const servicesMenu = (
-    <Menu
-      items={categories.services?.map((cat, index) => ({
-        key: index,
-        label: <Link to={`/services?category=${cat}`}>{cat}</Link>
-      })) || []}
-    />
-  );
+  // Helper function to create slug from title
+  const createSlug = (title) => {
+    return title.toLowerCase()
+      .replace(/[^a-z0-9 -]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim('-');
+  };
 
   return (
     <header
@@ -223,19 +219,19 @@ const Navbar = () => {
             Home
           </Link>
 
-          <Dropdown overlay={shopMenu} trigger={['hover']}>
+          <Dropdown menu={{ items: categories.products?.map((cat, index) => ({ key: index, label: <Link to={`/shop?category=${cat}`}>{cat}</Link> })) || [] }} trigger={['hover']}>
             <Link to="/shop" style={{ color: "#701a1a", textDecoration: "none" }}>
               Shop <DownOutlined style={{ fontSize: '10px' }} />
             </Link>
           </Dropdown>
 
-          <Dropdown overlay={poojaMenu} trigger={['hover']}>
+          <Dropdown menu={{ items: categories.poojas?.map((cat, index) => ({ key: index, label: <Link to={`/poojas?category=${cat}`}>{cat}</Link> })) || [] }} trigger={['hover']}>
             <Link to="/poojas" style={{ color: "#701a1a", textDecoration: "none" }}>
               Book a Pooja <DownOutlined style={{ fontSize: '10px' }} />
             </Link>
           </Dropdown>
 
-          <Dropdown overlay={servicesMenu} trigger={['hover']}>
+          <Dropdown menu={{ items: categories.services?.map((cat, index) => ({ key: index, label: <Link to={`/services?category=${cat}`}>{cat}</Link> })) || [] }} trigger={['hover']}>
             <Link to="/services" style={{ color: "#701a1a", textDecoration: "none" }}>
               Services <DownOutlined style={{ fontSize: '10px' }} />
             </Link>

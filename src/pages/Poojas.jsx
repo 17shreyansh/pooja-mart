@@ -143,7 +143,7 @@ const Poojas = () => {
               <Col xs={24} sm={12} md={8} lg={6} key={pooja._id}>
                 <Card
                   hoverable
-                  onClick={() => navigate(`/pooja/${pooja._id}`)}
+                  onClick={() => navigate(`/pooja/${pooja.slug}`)}
                   cover={
                     <div style={{ position: 'relative', overflow: 'visible' }}>
                       <img

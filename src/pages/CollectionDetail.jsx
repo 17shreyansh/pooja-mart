@@ -1,27 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Row, Col, Spin, Tag, Card, Badge } from 'antd';
-import { ArrowLeftOutlined, ShoppingCartOutlined, CheckCircleOutlined, ExclamationCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { frontendAPI } from '../utils/api';
+import { Button, Row, Col, Spin, Tag, Card, Badge, Form, Input, Rate, Modal, message } from 'antd';
+import { ArrowLeftOutlined, ShoppingCartOutlined, CheckCircleOutlined, ExclamationCircleOutlined, InfoCircleOutlined, StarOutlined, EditOutlined } from '@ant-design/icons';
+import { frontendAPI, testimonialsAPI } from '../utils/api';
 import featuredBG from '../assets/featuredBG.png';
 import bottomStrip from '../assets/bottom-strip.png';
 
 const CollectionDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [collection, setCollection] = useState(null);
+  const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [testimonialModalVisible, setTestimonialModalVisible] = useState(false);
+  const [testimonialForm] = Form.useForm();
 
   useEffect(() => {
     fetchCollectionDetail();
-  }, [id]);
+  }, [slug]);
 
   const fetchCollectionDetail = async () => {
     try {
-      const response = await frontendAPI.getCollectionById(id);
-      setCollection(response.data.data);
+      const collectionResponse = await frontendAPI.getCollectionBySlug(slug);
+      setCollection(collectionResponse.data.data);
+      
+      // Fetch testimonials for this specific collection
+      const testimonialsResponse = await testimonialsAPI.getAll({ service: collectionResponse.data.data.title });
+      setTestimonials(testimonialsResponse.data.data || []);
     } catch (error) {
-      console.error('Error fetching collection details:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
@@ -148,7 +155,7 @@ const CollectionDetail = () => {
               {collection.description}
             </p>
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
               <div style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -167,33 +174,6 @@ const CollectionDetail = () => {
                   ₹{collection.price?.toLocaleString()}
                 </span>
               </div>
-              
-              <Badge 
-                count={isInStock ? collection.stock : 0}
-                showZero={false}
-                style={{ backgroundColor: stockColor }}
-              >
-                <div style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  background: 'rgba(255,255,255,0.95)',
-                  padding: '12px 24px',
-                  borderRadius: '50px',
-                  border: `2px solid ${stockColor}`,
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.1)'
-                }}>
-                  {stockIcon}
-                  <span style={{
-                    color: stockColor,
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    marginLeft: '8px',
-                    fontFamily: 'Poppins, sans-serif'
-                  }}>
-                    {stockStatus}
-                  </span>
-                </div>
-              </Badge>
             </div>
           </div>
         </div>
@@ -272,28 +252,7 @@ const CollectionDetail = () => {
                         </p>
                       </div>
                     </Col>
-                    <Col span={24}>
-                      <div style={{ 
-                        borderTop: '1px solid #f0f0f0', 
-                        paddingTop: '16px', 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                      }}>
-                        <span style={{ color: '#666', fontSize: '14px' }}>Availability</span>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                          {stockIcon}
-                          <span style={{
-                            color: stockColor,
-                            fontSize: '16px',
-                            fontWeight: '600',
-                            marginLeft: '8px'
-                          }}>
-                            {isInStock ? `${collection.stock} items available` : 'Currently unavailable'}
-                          </span>
-                        </div>
-                      </div>
-                    </Col>
+
                   </Row>
                 </Card>
               </div>
@@ -402,10 +361,7 @@ const CollectionDetail = () => {
           </h2>
           
           <Row gutter={[24, 24]}>
-            {[
-              { name: 'Meera Patel', text: 'Beautiful quality items with authentic spiritual significance. Very happy with my purchase.', rating: 5 },
-              { name: 'Suresh Gupta', text: 'Excellent packaging and fast delivery. The items are exactly as described and of premium quality.', rating: 5 }
-            ].map((testimonial, index) => (
+            {testimonials.slice(0, 4).map((testimonial, index) => (
               <Col xs={24} md={12} key={index}>
                 <div style={{
                   background: '#F9F6EE',
@@ -427,21 +383,115 @@ const CollectionDetail = () => {
                     marginBottom: '16px',
                     fontStyle: 'italic'
                   }}>
-                    "{testimonial.text}"
+                    "{testimonial.testimonial}"
                   </p>
                   <div style={{
                     fontSize: '14px',
                     fontWeight: '600',
                     color: '#691B19'
                   }}>
-                    - {testimonial.name}
+                    - {testimonial.user?.name || 'User'}
                   </div>
                 </div>
               </Col>
             ))}
           </Row>
+          
+          <div style={{ textAlign: 'center', marginTop: '40px' }}>
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => {
+                const token = localStorage.getItem('userToken');
+                if (!token) {
+                  message.warning('Please login to write a review');
+                  navigate('/login');
+                  return;
+                }
+                setTestimonialModalVisible(true);
+              }}
+              style={{
+                background: '#691B19',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontFamily: 'Poppins, sans-serif',
+                fontWeight: '500'
+              }}
+            >
+              Write a Review
+            </Button>
+          </div>
         </div>
       </section>
+      
+      {/* Testimonial Modal */}
+      <Modal
+        title="Share Your Experience"
+        open={testimonialModalVisible}
+        onCancel={() => setTestimonialModalVisible(false)}
+        footer={null}
+        width={600}
+      >
+        <Form 
+          form={testimonialForm} 
+          onFinish={async (values) => {
+            try {
+              await testimonialsAPI.create({
+                ...values,
+                service: collection.title
+              });
+              message.success('Thank you! Your review has been submitted successfully.');
+              setTestimonialModalVisible(false);
+              testimonialForm.resetFields();
+            } catch (error) {
+              if (error.response?.status === 401) {
+                message.error('Please login to write a review');
+                navigate('/login');
+              } else if (error.response?.status === 400) {
+                message.error(error.response.data.message);
+              } else {
+                message.error('Failed to submit review');
+              }
+            }
+          }} 
+          layout="vertical"
+        >
+
+          
+          <Form.Item
+            name="rating"
+            label="Rating"
+            rules={[{ required: true, message: 'Please provide a rating' }]}
+          >
+            <Rate />
+          </Form.Item>
+          
+          <Form.Item
+            name="testimonial"
+            label="Your Review"
+            rules={[{ required: true, message: 'Please share your experience' }]}
+          >
+            <Input.TextArea 
+              rows={4} 
+              placeholder="Share your experience with this item..."
+            />
+          </Form.Item>
+          
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{
+                background: '#691B19',
+                border: 'none',
+                width: '100%'
+              }}
+            >
+              Submit Review
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
 
       {/* CTA Section */}
       <section style={{
@@ -458,7 +508,7 @@ const CollectionDetail = () => {
             marginBottom: '20px',
             lineHeight: '1.2'
           }}>
-            {isInStock ? 'Add to Your Sacred Collection' : 'Currently Unavailable'}
+            Add to Your Sacred Collection
           </h2>
           <p style={{
             fontSize: '18px',
@@ -467,18 +517,14 @@ const CollectionDetail = () => {
             fontFamily: 'Poppins, sans-serif',
             lineHeight: '1.6'
           }}>
-            {isInStock 
-              ? 'Get in touch with us to place your order for this authentic spiritual item'
-              : 'This item is currently out of stock. Contact us to know when it will be available again'
-            }
+            Get in touch with us to place your order for this authentic spiritual item
           </p>
           <Button
             size="large"
             icon={<ShoppingCartOutlined />}
-            disabled={!isInStock}
             style={{
-              background: isInStock ? '#F4E2C9' : 'rgba(255,255,255,0.3)',
-              color: isInStock ? '#691B19' : 'rgba(255,255,255,0.7)',
+              background: '#F4E2C9',
+              color: '#691B19',
               border: 'none',
               borderRadius: '12px',
               fontFamily: 'Poppins, sans-serif',
@@ -486,12 +532,11 @@ const CollectionDetail = () => {
               padding: '16px 40px',
               fontSize: '18px',
               height: 'auto',
-              boxShadow: isInStock ? '0 8px 24px rgba(0,0,0,0.2)' : 'none',
-              cursor: isInStock ? 'pointer' : 'not-allowed'
+              boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
             }}
-            onClick={() => isInStock && navigate(`/contact?service=${encodeURIComponent(collection.title)}&type=collection`)}
+            onClick={() => navigate(`/contact?service=${encodeURIComponent(collection.title)}&type=collection`)}
           >
-            {isInStock ? 'Order Now' : 'Out of Stock'}
+            Order Now
           </Button>
         </div>
       </section>

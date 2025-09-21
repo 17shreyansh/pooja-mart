@@ -183,7 +183,7 @@ const Services = () => {
               <Col xs={24} sm={12} md={8} lg={6} key={service._id}>
                 <Card
                   hoverable
-                  onClick={() => navigate(`/service/${service._id}`)}
+                  onClick={() => navigate(`/service/${service.slug}`)}
                   cover={
                     <div style={{ position: 'relative', overflow: 'visible' }}>
                       <img

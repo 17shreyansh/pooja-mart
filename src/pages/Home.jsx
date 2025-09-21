@@ -1,5 +1,7 @@
 import React from 'react';
 import HeroSection from '../components/home/HeroSection';
+import OffersSlider from '../components/home/OffersSlider';
+import OffersPopup from '../components/home/OffersPopup';
 import HowItWorks from '../components/home/HowItWorks';
 import OurServices from '../components/home/OurServices';
 import FeaturedPoojas from '../components/home/FeaturedPoojas';
@@ -11,12 +13,14 @@ const Home = () => {
   return (
     <>
       <HeroSection />
+      <OffersSlider />
       <HowItWorks />
       <OurServices />
       <FeaturedPoojas />
       <PoojaCollection />
       <BookPoojaCTA />
       <Testimonials />
+      <OffersPopup />
     </>
   );
 };

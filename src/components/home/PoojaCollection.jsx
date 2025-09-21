@@ -26,7 +26,7 @@ const PoojaCollection = () => {
 
   const fetchPoojas = async () => {
     try {
-      const response = await frontendAPI.getPoojaCollection();
+      const response = await frontendAPI.getCollections();
       setPoojas(response.data.data);
     } catch (error) {
       console.error('Error fetching pooja collection:', error);

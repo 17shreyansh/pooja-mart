@@ -23,14 +23,18 @@ userApi.interceptors.request.use((config) => {
 export const frontendAPI = {
   getPoojas: (params) => api.get('/poojas', { params }),
   getPoojaById: (id) => api.get(`/poojas/${id}`),
+  getPoojaBySlug: (slug) => api.get(`/poojas/slug/${slug}`),
   getServices: (params) => api.get('/services', { params }),
   getServiceById: (id) => api.get(`/services/${id}`),
+  getServiceBySlug: (slug) => api.get(`/services/slug/${slug}`),
   getCollections: (params) => api.get('/pooja-collection', { params }),
   getCollectionById: (id) => api.get(`/pooja-collection/${id}`),
+  getCollectionBySlug: (slug) => api.get(`/pooja-collection/slug/${slug}`),
   getTestimonials: () => api.get('/testimonials'),
   getFAQs: () => api.get('/faqs'),
   submitLead: (data) => api.post('/leads', data),
   subscribeNewsletter: (email) => api.post('/newsletter/subscribe', { email }),
+  search: (params) => api.get('/search', { params }),
 };
 
 export const userAuthAPI = {
@@ -41,6 +45,6 @@ export const userAuthAPI = {
 };
 
 export const testimonialsAPI = {
-  getAll: () => api.get('/testimonials'),
+  getAll: (params) => api.get('/testimonials', { params }),
   create: (data) => userApi.post('/testimonials', data),
 };
