@@ -67,8 +67,9 @@ const PoojaCollection = () => {
                 <PoojaCard
                   image={pooja.image ? `${import.meta.env.VITE_API_BASE_URL}${pooja.image}` : '/placeholder.jpg'}
                   title={pooja.title}
-                  subtitle1={pooja.subtitle1}
-                  subtitle2={pooja.subtitle2}
+                  description={pooja.description}
+                  id={pooja._id}
+                  type="collection"
                 />
               </div>
             </Col>

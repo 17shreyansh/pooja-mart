@@ -40,6 +40,7 @@ export const poojasAPI = {
 export const poojaCollectionAPI = {
   getAll: (params) => api.get('/pooja-collection', { params }),
   getAllAdmin: (params) => api.get('/pooja-collection/admin', { params }),
+  getById: (id) => api.get(`/pooja-collection/${id}`),
   create: (data) => api.post('/pooja-collection', data),
   update: (id, data) => api.put(`/pooja-collection/${id}`, data),
   delete: (id) => api.delete(`/pooja-collection/${id}`),
@@ -47,6 +48,7 @@ export const poojaCollectionAPI = {
 
 export const testimonialsAPI = {
   getAll: () => api.get('/testimonials'),
+  getAllAdmin: () => api.get('/testimonials/admin'),
   create: (data) => api.post('/testimonials', data),
   update: (id, data) => api.put(`/testimonials/${id}`, data),
   delete: (id) => api.delete(`/testimonials/${id}`),
@@ -86,6 +88,26 @@ export const newsletterAPI = {
   update: (id, data) => api.put(`/newsletter/${id}`, data),
   delete: (id) => api.delete(`/newsletter/${id}`),
   export: () => api.get('/newsletter/export', { responseType: 'blob' }),
+};
+
+// User Authentication API
+const userApi = axios.create({
+  baseURL: API_BASE_URL,
+});
+
+userApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('userToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const userAuthAPI = {
+  register: (data) => userApi.post('/user-auth/register', data),
+  login: (data) => userApi.post('/user-auth/login', data),
+  verify: () => userApi.get('/user-auth/verify'),
+  changePassword: (data) => userApi.put('/user-auth/change-password', data),
 };
 
 export const adminAPI = api;

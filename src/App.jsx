@@ -5,10 +5,16 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import Services from './pages/Services';
+import ServiceDetail from './pages/ServiceDetail';
 import Poojas from './pages/Poojas';
+import PoojaDetail from './pages/PoojaDetail';
 import Shop from './pages/Shop';
+import CollectionDetail from './pages/CollectionDetail';
 import Contact from './pages/Contact';
 import PolicyPage from './pages/PolicyPage';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import UserDashboard from './pages/UserDashboard';
 import AdminApp from './admin/AdminApp';
 
 function ScrollToTop() {
@@ -36,10 +42,16 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/service/:id" element={<ServiceDetail />} />
             <Route path="/poojas" element={<Poojas />} />
+            <Route path="/pooja/:id" element={<PoojaDetail />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/collection/:id" element={<CollectionDetail />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/policy/:slug" element={<PolicyPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/user/dashboard" element={<UserDashboard />} />
           </Routes>
         </main>
         <Footer />

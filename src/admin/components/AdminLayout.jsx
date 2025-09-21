@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Button, Avatar, Dropdown, Typography, Space } from 'antd';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   DashboardOutlined, 
   ToolOutlined, 
@@ -22,9 +23,25 @@ const { Text } = Typography;
 
 const { Header, Sider, Content } = Layout;
 
-const AdminLayout = ({ children, onLogout, currentPath, onNavigate, admin }) => {
+const AdminLayout = ({ children, onLogout, admin }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  
+  const getCurrentKey = () => {
+    const path = location.pathname;
+    if (path.includes('/services')) return 'services';
+    if (path.includes('/poojas')) return 'poojas';
+    if (path.includes('/collections')) return 'collections';
+    if (path.includes('/user-testimonials')) return 'user-testimonials';
+    if (path.includes('/testimonials')) return 'testimonials';
+    if (path.includes('/leads')) return 'leads';
+    if (path.includes('/faqs')) return 'faqs';
+    if (path.includes('/pages')) return 'pages';
+    if (path.includes('/newsletter')) return 'newsletter';
+    return 'dashboard';
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,12 +61,17 @@ const AdminLayout = ({ children, onLogout, currentPath, onNavigate, admin }) => 
     { key: 'leads', icon: <ContactsOutlined />, label: 'Leads' },
     { key: 'services', icon: <ToolOutlined />, label: 'Services' },
     { key: 'poojas', icon: <StarOutlined />, label: 'Poojas' },
-    { key: 'pooja-collection', icon: <ShoppingOutlined />, label: 'Pooja Collection' },
+    { key: 'collections', icon: <ShoppingOutlined />, label: 'Collections' },
     { key: 'testimonials', icon: <MessageOutlined />, label: 'Testimonials' },
+    { key: 'user-testimonials', icon: <UserOutlined />, label: 'User Reviews' },
     { key: 'faqs', icon: <QuestionCircleOutlined />, label: 'FAQs' },
     { key: 'pages', icon: <FileTextOutlined />, label: 'Pages' },
     { key: 'newsletter', icon: <MailOutlined />, label: 'Newsletter' },
   ];
+  
+  const handleMenuClick = ({ key }) => {
+    navigate(`/admin/${key}`);
+  };
 
   return (
     <div className="admin-layout">
@@ -89,9 +111,9 @@ const AdminLayout = ({ children, onLogout, currentPath, onNavigate, admin }) => 
         <Menu
           theme="dark"
           mode="inline"
-          selectedKeys={[currentPath]}
+          selectedKeys={[getCurrentKey()]}
           items={menuItems}
-          onClick={({ key }) => onNavigate(key)}
+          onClick={handleMenuClick}
           style={{ borderRight: 0 }}
         />
       </Sider>

@@ -54,8 +54,7 @@ const Shop = () => {
 
   const filteredItems = items.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.subtitle1?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.subtitle2?.toLowerCase().includes(searchTerm.toLowerCase())
+    item.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -222,41 +221,98 @@ const Shop = () => {
               <Col xs={24} sm={12} md={8} lg={6} key={item._id}>
                 <Card
                   hoverable
+                  onClick={() => navigate(`/collection/${item._id}`)}
+                  cover={
+                    <div style={{ position: 'relative', overflow: 'visible' }}>
+                      <img
+                        src={item.image ? `${import.meta.env.VITE_API_BASE_URL}${item.image}` : '/placeholder.jpg'}
+                        alt={item.title}
+                        style={{ 
+                          width: '100%', 
+                          height: '220px', 
+                          objectFit: 'cover', 
+                          borderRadius: '20px 20px 0 0'
+                        }}
+                      />
+                      <Button
+                        type="primary"
+                        style={{
+                          position: 'absolute',
+                          bottom: '10px',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          background: '#FFFFFF1A',
+                          border: '1px solid #828282',
+                          backdropFilter: 'blur(2px)',
+                          color: '#ffffff',
+                          fontWeight: '500',
+                          fontFamily: 'Poppins, sans-serif',
+                          borderRadius: '8px'
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          navigate(`/contact?service=${encodeURIComponent(item.title)}&type=collection`);
+                        }}
+                      >
+                        Order Now
+                      </Button>
+                    </div>
+                  }
                   style={{
                     borderRadius: '20px',
                     border: 'none',
                     boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
                     height: '100%',
-                    overflow: 'hidden'
+                    overflow: 'visible',
+                    textAlign: 'center',
+                    fontFamily: 'Poppins, sans-serif',
+                    cursor: 'pointer'
                   }}
-                  bodyStyle={{ padding: 0 }}
                 >
-                  <PoojaCard
-                    image={item.image ? `${import.meta.env.VITE_API_BASE_URL}${item.image}` : '/placeholder.jpg'}
-                    title={item.title}
-                    subtitle1={item.subtitle1}
-                    subtitle2={item.subtitle2}
-                  />
-                  <div style={{ padding: '15px' }}>
-                    <Button
-                      style={{
-                        width: '100%',
-                        background: '#691B19',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontFamily: 'Poppins, sans-serif',
-                        fontWeight: '500',
-                        height: '40px'
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        navigate(`/contact?service=${encodeURIComponent(item.title)}&type=product`);
-                      }}
-                    >
-                      Add to Cart
-                    </Button>
+                  <div style={{ padding: '16px' }}>
+                    <h3 style={{
+                      fontFamily: 'Poppins, sans-serif',
+                      color: '#691B19',
+                      fontWeight: '600',
+                      fontSize: '16px',
+                      marginBottom: '8px'
+                    }}>
+                      {item.title}
+                    </h3>
+                    <p style={{
+                      color: '#828282',
+                      fontFamily: 'Poppins, sans-serif',
+                      fontSize: '14px',
+                      lineHeight: '1.6',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      marginBottom: '12px'
+                    }}>
+                      {item.description}
+                    </p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      {item.price && (
+                        <div style={{
+                          fontSize: '18px',
+                          fontWeight: '600',
+                          color: '#691B19'
+                        }}>
+                          ₹{item.price}
+                        </div>
+                      )}
+                      {item.stock !== undefined && (
+                        <div style={{
+                          fontSize: '12px',
+                          color: item.stock > 0 ? '#52c41a' : '#ff4d4f',
+                          fontWeight: '500'
+                        }}>
+                          {item.stock > 0 ? `${item.stock} left` : 'Out of stock'}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </Card>
               </Col>

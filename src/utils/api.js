@@ -1,20 +1,46 @@
 import axios from 'axios';
-import { API_BASE_URL as BASE_URL } from '../config/api.js';
 
-const API_BASE_URL = `${BASE_URL}/api`;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
+// Frontend API (no auth required)
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/api`,
+});
+
+// User API (with user auth)
+const userApi = axios.create({
+  baseURL: `${API_BASE_URL}/api`,
+});
+
+userApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('userToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export const frontendAPI = {
-  getServices: (params) => api.get('/services', { params }),
   getPoojas: (params) => api.get('/poojas', { params }),
-  getPoojaCollection: (params) => api.get('/pooja-collection', { params }),
+  getPoojaById: (id) => api.get(`/poojas/${id}`),
+  getServices: (params) => api.get('/services', { params }),
+  getServiceById: (id) => api.get(`/services/${id}`),
+  getCollections: (params) => api.get('/pooja-collection', { params }),
+  getCollectionById: (id) => api.get(`/pooja-collection/${id}`),
   getTestimonials: () => api.get('/testimonials'),
-  getFaqs: () => api.get('/faqs'),
-  getPage: (slug) => api.get(`/pages/${slug}`),
+  getFAQs: () => api.get('/faqs'),
+  submitLead: (data) => api.post('/leads', data),
   subscribeNewsletter: (email) => api.post('/newsletter/subscribe', { email }),
-  search: (params) => api.get('/search', { params }),
-  getCategories: () => api.get('/search/categories')
+};
+
+export const userAuthAPI = {
+  register: (data) => api.post('/user-auth/register', data),
+  login: (data) => api.post('/user-auth/login', data),
+  verify: () => userApi.get('/user-auth/verify'),
+  changePassword: (data) => userApi.put('/user-auth/change-password', data),
+};
+
+export const testimonialsAPI = {
+  getAll: () => api.get('/testimonials'),
+  create: (data) => userApi.post('/testimonials', data),
 };

@@ -2,8 +2,17 @@ import React from 'react';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-const PoojaCard = ({ image, title, subtitle1, subtitle2 }) => {
+const PoojaCard = ({ image, title, description, id, type = 'pooja', onClick }) => {
   const navigate = useNavigate();
+  
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      navigate(`/${type}/${id}`);
+    }
+  };
+  
   return (
     <div
       style={{
@@ -17,8 +26,10 @@ const PoojaCard = ({ image, title, subtitle1, subtitle2 }) => {
         width: '100%',
         maxWidth: '280px',
         minWidth: '160px',
-        margin: '0 auto'
+        margin: '0 auto',
+        cursor: 'pointer'
       }}
+      onClick={handleCardClick}
     >
       {/* Image with fixed portrait ratio */}
       <div
@@ -73,21 +84,14 @@ const PoojaCard = ({ image, title, subtitle1, subtitle2 }) => {
                 fontFamily: 'Poppins, sans-serif',
                 margin: '0',
                 fontSize: 'clamp(10px, 2vw, 12px)',
-                lineHeight: '1.2'
+                lineHeight: '1.2',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden'
               }}
             >
-              {subtitle1}
-            </p>
-            <p
-              style={{
-                color: '#828282',
-                fontFamily: 'Poppins, sans-serif',
-                margin: '0',
-                fontSize: 'clamp(10px, 2vw, 12px)',
-                lineHeight: '1.2'
-              }}
-            >
-              {subtitle2}
+              {description}
             </p>
           </div>
           
@@ -110,7 +114,7 @@ const PoojaCard = ({ image, title, subtitle1, subtitle2 }) => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              navigate(`/contact?service=${encodeURIComponent(title)}&type=product`);
+              navigate(`/contact?service=${encodeURIComponent(title)}&type=${type}`);
             }}
           >
             Book Now

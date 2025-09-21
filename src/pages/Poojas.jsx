@@ -143,6 +143,7 @@ const Poojas = () => {
               <Col xs={24} sm={12} md={8} lg={6} key={pooja._id}>
                 <Card
                   hoverable
+                  onClick={() => navigate(`/pooja/${pooja._id}`)}
                   cover={
                     <div style={{ position: 'relative', overflow: 'visible' }}>
                       <img
@@ -187,7 +188,8 @@ const Poojas = () => {
                     border: 'none',
                     boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
                     fontFamily: 'Poppins, sans-serif',
-                    minHeight: '400px'
+                    minHeight: '400px',
+                    cursor: 'pointer'
                   }}
                 >
                   <Meta
@@ -206,9 +208,13 @@ const Poojas = () => {
                         color: '#828282', 
                         fontFamily: 'Poppins, sans-serif',
                         fontSize: '14px',
-                        lineHeight: '1.6'
+                        lineHeight: '1.6',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
                       }}>
-                        {pooja.subtitle}
+                        {pooja.description}
                       </span>
                     }
                   />

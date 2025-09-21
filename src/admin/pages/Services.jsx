@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Upload, Popconfirm, App, Switch, Select, Card } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import { Table, Button, Popconfirm, App, Select, Card, Input } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import { servicesAPI } from '../utils/api';
 import { API_BASE_URL } from '../../config/api';
 
 const Services = () => {
   const { message } = App.useApp();
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editingService, setEditingService] = useState(null);
-  const [fileList, setFileList] = useState([]);
-  const [form] = Form.useForm();
   const [categories, setCategories] = useState([]);
   const [filters, setFilters] = useState({ search: '', category: '' });
 
@@ -31,33 +29,7 @@ const Services = () => {
     setLoading(false);
   };
 
-  const handleSubmit = async (values) => {
-    const formData = new FormData();
-    formData.append('title', values.title);
-    formData.append('subtitle', values.subtitle);
-    formData.append('category', values.category);
-    formData.append('isActive', values.isActive || true);
-    if (fileList.length > 0 && fileList[0].originFileObj) {
-      formData.append('image', fileList[0].originFileObj);
-    }
 
-    try {
-      if (editingService) {
-        await servicesAPI.update(editingService._id, formData);
-        message.success('Service updated');
-      } else {
-        await servicesAPI.create(formData);
-        message.success('Service created');
-      }
-      setModalVisible(false);
-      form.resetFields();
-      setEditingService(null);
-      setFileList([]);
-      fetchServices();
-    } catch (error) {
-      message.error('Operation failed');
-    }
-  };
 
   const handleDelete = async (id) => {
     try {
@@ -71,8 +43,20 @@ const Services = () => {
 
   const columns = [
     { title: 'Title', dataIndex: 'title', key: 'title' },
-    { title: 'Subtitle', dataIndex: 'subtitle', key: 'subtitle' },
+    { 
+      title: 'Description', 
+      dataIndex: 'description', 
+      key: 'description',
+      render: (text) => text ? text.substring(0, 50) + '...' : 'No description'
+    },
     { title: 'Category', dataIndex: 'category', key: 'category' },
+    { 
+      title: 'Price', 
+      dataIndex: 'price', 
+      key: 'price',
+      render: (price) => price ? `₹${price}` : 'N/A'
+    },
+
     { 
       title: 'Status', 
       dataIndex: 'isActive', 
@@ -90,12 +74,7 @@ const Services = () => {
       key: 'actions',
       render: (_, record) => (
         <>
-          <Button icon={<EditOutlined />} onClick={() => {
-            setEditingService(record);
-            form.setFieldsValue(record);
-            setFileList([]);
-            setModalVisible(true);
-          }} style={{ marginRight: 8 }} />
+          <Button icon={<EditOutlined />} onClick={() => navigate(`/admin/services/edit/${record._id}`)} style={{ marginRight: 8 }} />
           <Popconfirm title="Delete this service?" onConfirm={() => handleDelete(record._id)}>
             <Button icon={<DeleteOutlined />} danger />
           </Popconfirm>
@@ -107,7 +86,7 @@ const Services = () => {
   return (
     <div style={{ padding: '24px' }}>
       <Card title="Services Management" extra={
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/admin/services/new')}>
           Add Service
         </Button>
       }>
@@ -134,49 +113,7 @@ const Services = () => {
         <Table columns={columns} dataSource={services} loading={loading} rowKey="_id" />
       </Card>
 
-      <Modal
-        title={editingService ? 'Edit Service' : 'Add Service'}
-        open={modalVisible}
-        onCancel={() => {
-          setModalVisible(false);
-          form.resetFields();
-          setEditingService(null);
-          setFileList([]);
-        }}
-        footer={null}
-      >
-        <Form form={form} onFinish={handleSubmit} layout="vertical">
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="subtitle" label="Subtitle" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
 
-          <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-            <Input placeholder="e.g., Wedding, Festival, Daily Worship" />
-          </Form.Item>
-
-          <Form.Item name="isActive" label="Status" valuePropName="checked">
-            <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
-          </Form.Item>
-          <Form.Item name="image" label="Image">
-            <Upload 
-              beforeUpload={() => false} 
-              maxCount={1} 
-              fileList={fileList}
-              onChange={({ fileList }) => setFileList(fileList)}
-            >
-              <Button icon={<UploadOutlined />}>Upload Image</Button>
-            </Upload>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              {editingService ? 'Update' : 'Create'}
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 };

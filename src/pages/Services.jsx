@@ -183,6 +183,7 @@ const Services = () => {
               <Col xs={24} sm={12} md={8} lg={6} key={service._id}>
                 <Card
                   hoverable
+                  onClick={() => navigate(`/service/${service._id}`)}
                   cover={
                     <div style={{ position: 'relative', overflow: 'visible' }}>
                       <img
@@ -227,7 +228,8 @@ const Services = () => {
                     border: 'none',
                     boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
                     fontFamily: 'Poppins, sans-serif',
-                    height: '100%'
+                    height: '100%',
+                    cursor: 'pointer'
                   }}
                 >
                   <Meta
@@ -246,9 +248,13 @@ const Services = () => {
                         color: '#828282', 
                         fontFamily: 'Poppins, sans-serif',
                         fontSize: '14px',
-                        lineHeight: '1.6'
+                        lineHeight: '1.6',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
                       }}>
-                        {service.subtitle}
+                        {service.description}
                       </span>
                     }
                   />

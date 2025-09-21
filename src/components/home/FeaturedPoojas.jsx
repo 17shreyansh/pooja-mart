@@ -75,6 +75,7 @@ const FeaturedPoojas = () => {
             <SwiperSlide key={index}>
               <Card
                 hoverable
+                onClick={() => navigate(`/pooja/${pooja._id}`)}
                 cover={
                   <div style={{ position: 'relative', overflow: 'visible' }}>
                     <img
@@ -114,12 +115,24 @@ const FeaturedPoojas = () => {
                   boxShadow: 'none',
                   fontFamily: 'Poppins, sans-serif',
                   minHeight: '480px',
-                  background: 'transparent'
+                  background: 'transparent',
+                  cursor: 'pointer'
                 }}
               >
                 <Meta
                   title={<span style={{ fontFamily: 'Poppins, sans-serif', color: '#691B19', fontWeight: '400' }}>{pooja.title}</span>}
-                  description={<span style={{ color: '#828282', fontFamily: 'Poppins, sans-serif' }}>{pooja.subtitle}</span>}
+                  description={
+                    <span style={{ 
+                      color: '#828282', 
+                      fontFamily: 'Poppins, sans-serif',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
+                    }}>
+                      {pooja.description}
+                    </span>
+                  }
                 />
               </Card>
             </SwiperSlide>

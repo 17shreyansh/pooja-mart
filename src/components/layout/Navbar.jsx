@@ -1,12 +1,95 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Menu, Dropdown, Button, Drawer, Input, AutoComplete } from "antd";
 import { Link, useNavigate } from 'react-router-dom';
-import { DownOutlined, MenuOutlined, CloseOutlined, SearchOutlined } from "@ant-design/icons";
+import { DownOutlined, MenuOutlined, CloseOutlined, SearchOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import { frontendAPI } from '../../utils/api';
 import logo from "../../assets/logo.png";
 import searchIcon from "../../assets/icons/proicons_search.png";
 import userIcon from "../../assets/icons/solar_user-linear.png";
 import cartIcon from "../../assets/icons/solar_cart-3-linear.png";
+
+const UserAuth = () => {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('user');
+    setUser(null);
+    navigate('/');
+  };
+
+  if (user) {
+    const userMenu = (
+      <Menu
+        items={[
+          {
+            key: 'dashboard',
+            label: <Link to="/user/dashboard">Dashboard</Link>,
+            icon: <UserOutlined />
+          },
+          {
+            key: 'logout',
+            label: 'Logout',
+            icon: <LogoutOutlined />,
+            onClick: handleLogout
+          }
+        ]}
+      />
+    );
+
+    return (
+      <Dropdown overlay={userMenu} trigger={['hover']}>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '8px', 
+          cursor: 'pointer',
+          color: '#701a1a'
+        }}>
+          <UserOutlined style={{ fontSize: '16px' }} />
+          <span>{user.name}</span>
+          <DownOutlined style={{ fontSize: '10px' }} />
+        </div>
+      </Dropdown>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: '12px' }}>
+      <Link 
+        to="/login" 
+        style={{ 
+          color: '#701a1a', 
+          textDecoration: 'none',
+          fontSize: '14px',
+          fontWeight: '500'
+        }}
+      >
+        Login
+      </Link>
+      <span style={{ color: '#ccc' }}>|</span>
+      <Link 
+        to="/signup" 
+        style={{ 
+          color: '#701a1a', 
+          textDecoration: 'none',
+          fontSize: '14px',
+          fontWeight: '500'
+        }}
+      >
+        Sign Up
+      </Link>
+    </div>
+  );
+};
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -221,6 +304,9 @@ const Navbar = () => {
               />
             </div>
           </div>
+          
+          {/* User Authentication */}
+          <UserAuth />
         </div>
 
         {/* Mobile Icons */}
@@ -283,6 +369,10 @@ const Navbar = () => {
             <Link to="/contact" style={{ color: "#701a1a", textDecoration: "none", fontSize: "16px" }} onClick={() => setMobileMenuOpen(false)}>
               Contact Us
             </Link>
+            
+            <div style={{ borderTop: '1px solid #eee', paddingTop: '20px', marginTop: '20px' }}>
+              <UserAuth />
+            </div>
           </div>
         </div>
       </Drawer>

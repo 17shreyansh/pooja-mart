@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Upload, Popconfirm, App } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import { Table, Button, Popconfirm, App } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import { poojasAPI } from '../utils/api';
 import { API_BASE_URL } from '../../config/api';
 
 const Poojas = () => {
   const { message } = App.useApp();
+  const navigate = useNavigate();
   const [poojas, setPoojas] = useState([]);
-  const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [editingPooja, setEditingPooja] = useState(null);
-  const [form] = Form.useForm();
 
   useEffect(() => {
     fetchPoojas();
@@ -28,31 +26,7 @@ const Poojas = () => {
     setLoading(false);
   };
 
-  const handleSubmit = async (values) => {
-    const formData = new FormData();
-    formData.append('title', values.title);
-    formData.append('subtitle', values.subtitle);
-    if (fileList.length > 0 && fileList[0].originFileObj) {
-      formData.append('image', fileList[0].originFileObj);
-    }
 
-    try {
-      if (editingPooja) {
-        await poojasAPI.update(editingPooja._id, formData);
-        message.success('Pooja updated');
-      } else {
-        await poojasAPI.create(formData);
-        message.success('Pooja created');
-      }
-      setModalVisible(false);
-      form.resetFields();
-      setEditingPooja(null);
-      setFileList([]);
-      fetchPoojas();
-    } catch (error) {
-      message.error('Operation failed');
-    }
-  };
 
   const handleDelete = async (id) => {
     try {
@@ -66,7 +40,19 @@ const Poojas = () => {
 
   const columns = [
     { title: 'Title', dataIndex: 'title', key: 'title' },
-    { title: 'Subtitle', dataIndex: 'subtitle', key: 'subtitle' },
+    { 
+      title: 'Description', 
+      dataIndex: 'description', 
+      key: 'description',
+      render: (text) => text ? text.substring(0, 50) + '...' : 'No description'
+    },
+    { title: 'Category', dataIndex: 'category', key: 'category' },
+    {
+      title: 'Packages',
+      dataIndex: 'packages',
+      key: 'packages',
+      render: (packages) => packages ? packages.length : 0
+    },
     {
       title: 'Image',
       dataIndex: 'image',
@@ -78,12 +64,7 @@ const Poojas = () => {
       key: 'actions',
       render: (_, record) => (
         <>
-          <Button icon={<EditOutlined />} onClick={() => {
-            setEditingPooja(record);
-            form.setFieldsValue(record);
-            setFileList([]);
-            setModalVisible(true);
-          }} style={{ marginRight: 8 }} />
+          <Button icon={<EditOutlined />} onClick={() => navigate(`/admin/poojas/edit/${record._id}`)} style={{ marginRight: 8 }} />
           <Popconfirm title="Delete this pooja?" onConfirm={() => handleDelete(record._id)}>
             <Button icon={<DeleteOutlined />} danger />
           </Popconfirm>
@@ -96,48 +77,14 @@ const Poojas = () => {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
         <h1>Poojas</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalVisible(true)}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/admin/poojas/new')}>
           Add Pooja
         </Button>
       </div>
 
       <Table columns={columns} dataSource={poojas} loading={loading} rowKey="_id" />
 
-      <Modal
-        title={editingPooja ? 'Edit Pooja' : 'Add Pooja'}
-        open={modalVisible}
-        onCancel={() => {
-          setModalVisible(false);
-          form.resetFields();
-          setEditingPooja(null);
-          setFileList([]);
-        }}
-        footer={null}
-      >
-        <Form form={form} onFinish={handleSubmit} layout="vertical">
-          <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="subtitle" label="Subtitle" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="image" label="Image">
-            <Upload 
-              beforeUpload={() => false} 
-              maxCount={1} 
-              fileList={fileList}
-              onChange={({ fileList }) => setFileList(fileList)}
-            >
-              <Button icon={<UploadOutlined />}>Upload Image</Button>
-            </Upload>
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              {editingPooja ? 'Update' : 'Create'}
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+
     </div>
   );
 };
