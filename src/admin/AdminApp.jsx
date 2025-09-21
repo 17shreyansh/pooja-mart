@@ -16,6 +16,7 @@ import FAQs from './pages/FAQs';
 import Pages from './pages/Pages';
 import Newsletter from './pages/Newsletter';
 import Offers from './pages/Offers';
+import HomePageEditor from './pages/HomePageEditor';
 import AdminLayout from './components/AdminLayout';
 import { authAPI } from './utils/api';
 
@@ -116,6 +117,7 @@ const AdminApp = () => {
               <Route path="/admin/pages" element={<Pages />} />
               <Route path="/admin/newsletter" element={<Newsletter />} />
               <Route path="/admin/offers" element={<Offers />} />
+              <Route path="/admin/home-page" element={<HomePageEditor />} />
             </Routes>
           </AdminLayout>
         </Router>

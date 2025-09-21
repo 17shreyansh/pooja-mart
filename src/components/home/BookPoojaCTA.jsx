@@ -1,14 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { homePageAPI } from '../../utils/homePageApi';
 import featuredBG from '../../assets/ctaBG.jpg';
 
 const BookPoojaCTA = () => {
   const navigate = useNavigate();
+  const [content, setContent] = useState({
+    ctaTitle: 'Book Your Pooja. Shop Divine Essentials.',
+    ctaButtonText: 'Book a Pooja',
+    ctaBackgroundImage: featuredBG
+  });
+
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  const fetchContent = async () => {
+    try {
+      const response = await homePageAPI.getContent();
+      if (response.data.data.cta) {
+        setContent(prev => ({ ...prev, ...response.data.data.cta }));
+      }
+    } catch (error) {
+      console.error('Error fetching CTA content:', error);
+    }
+  };
   return (
     <section
       style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${featuredBG})`,
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${content.ctaBackgroundImage || featuredBG})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -36,8 +57,12 @@ const BookPoojaCTA = () => {
                   lineHeight: '1.3',
                 }}
               >
-                Book Your Pooja. <br />
-                Shop Divine Essentials.
+                {content.ctaTitle.split('. ').map((part, index) => (
+                  <span key={index}>
+                    {part}{index === 0 ? '. ' : ''}
+                    {index === 0 && <br />}
+                  </span>
+                ))}
               </h2>
 
               <Button
@@ -55,7 +80,7 @@ const BookPoojaCTA = () => {
                 }}
                 onClick={() => navigate('/contact')}
               >
-                Book a Pooja
+                {content.ctaButtonText}
               </Button>
             </div>
           </Col>

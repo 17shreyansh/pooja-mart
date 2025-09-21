@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Button } from "antd";
+import { homePageAPI } from '../../utils/homePageApi';
 
 // Import assets
 import step1 from "../../assets/step1.png";
@@ -10,39 +11,56 @@ import bottomStrip from "../../assets/bottom-strip.png";
 import image01 from "../../assets/image01.png";
 
 const HowItWorks = () => {
-  const steps = [
-    {
-      number: "01",
-      image: step1,
-      title: "Select Pooja or Product",
-      description: "Browse and pick Pooja kits & items",
-    },
-    {
-      number: "02",
-      image: step2,
-      title: "Customize & Book",
-      description: "Choose date, time & purpose (for pooja)",
-    },
-    {
-      number: "03",
-      image: step3,
-      title: "Easy Payment",
-      description: "Secure online transactions",
-    },
-    {
-      number: "04",
-      image: step4,
-      title: "Experience the Divine",
-      description: "Pandit Ji performs rituals or products reach home",
-    },
-  ];
+  const [content, setContent] = useState({
+    heading: 'How It works',
+    steps: [
+      {
+        number: "01",
+        image: step1,
+        title: "Select Pooja or Product",
+        description: "Browse and pick Pooja kits & items",
+      },
+      {
+        number: "02",
+        image: step2,
+        title: "Customize & Book",
+        description: "Choose date, time & purpose (for pooja)",
+      },
+      {
+        number: "03",
+        image: step3,
+        title: "Easy Payment",
+        description: "Secure online transactions",
+      },
+      {
+        number: "04",
+        image: step4,
+        title: "Experience the Divine",
+        description: "Pandit Ji performs rituals or products reach home",
+      },
+    ],
+    buttons: [
+      "Get Prasad",
+      "Book Pandit ji",
+      "Order Pooja Kit",
+      "Vastu Consultation",
+    ]
+  });
 
-  const buttons = [
-    "Get Prasad",
-    "Book Pandit ji",
-    "Order Pooja Kit",
-    "Vastu Consultation",
-  ];
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  const fetchContent = async () => {
+    try {
+      const response = await homePageAPI.getContent();
+      if (response.data.data.howItWorks) {
+        setContent(prev => ({ ...prev, ...response.data.data.howItWorks }));
+      }
+    } catch (error) {
+      console.error('Error fetching how it works content:', error);
+    }
+  };
 
   return (
     <section style={{ background: "#fff" }}>
@@ -57,7 +75,7 @@ const HowItWorks = () => {
           fontFamily: "Bastoni",
         }}
       >
-        How It works
+        {content.heading}
       </h2>
 
       {/* Image below heading */}
@@ -69,7 +87,7 @@ const HowItWorks = () => {
 
       {/* Steps */}
       <Row gutter={[32, 32]} justify="center" style={{ marginBottom: "40px" }}>
-        {steps.map((step, index) => (
+        {content.steps.map((step, index) => (
           <Col xs={24} md={6} key={index} style={{ textAlign: "center" }}>
             <div>
               <img
@@ -110,7 +128,7 @@ const HowItWorks = () => {
 
       {/* Buttons */}
       <Row gutter={[16, 16]} justify="center" style={{ marginTop: "40px" }}>
-        {buttons.map((btn, i) => (
+        {content.buttons.map((btn, i) => (
           <Col xs={12} sm={8} md={6} lg={6} key={i}>
             <Button
               style={{

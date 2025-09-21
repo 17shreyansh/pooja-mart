@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Input, Button, Form } from "antd";
 import { useNavigate } from 'react-router-dom';
+import { homePageAPI } from '../../utils/homePageApi';
 import heroImage from "../../assets/hero-bg.jpg";
 import banner from "../../assets/hero-1.png";
 import "./HeroSection.css";
@@ -8,6 +9,28 @@ import "./HeroSection.css";
 const HeroSection = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [content, setContent] = useState({
+    title: 'Pooja Samagri, Prasad & Pandit Ji – All at One Place',
+    description: 'Complete Devotional Service at Your Doorstep – For Peace, Happiness & Prosperity',
+    phone: '8929255775',
+    backgroundImage: heroImage,
+    bannerImage: banner
+  });
+
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  const fetchContent = async () => {
+    try {
+      const response = await homePageAPI.getContent();
+      if (response.data.data.hero) {
+        setContent(prev => ({ ...prev, ...response.data.data.hero }));
+      }
+    } catch (error) {
+      console.error('Error fetching hero content:', error);
+    }
+  };
 
   const handleSubmit = (values) => {
     if (!values.city && !values.poojaName) {
@@ -25,11 +48,11 @@ const HeroSection = () => {
 
   return (
     <section className="hero-section" style={{
-      backgroundImage: `url(${heroImage})`
+      backgroundImage: `url(${content.backgroundImage || heroImage})`
     }}>
       {/* Banner touching navbar - Hidden on mobile */}
       <img
-        src={banner}
+        src={content.bannerImage || banner}
         alt="Banner"
         className="hero-banner"
       />
@@ -39,13 +62,12 @@ const HeroSection = () => {
         <Col xs={24} md={12}>
           <div className="hero-text-content">
             <h1 className="hero-title">
-              Pooja Samagri, Prasad & Pandit Ji – All at One Place
+              {content.title}
             </h1>
             <p className="hero-description">
-              Complete Devotional Service at Your Doorstep – For Peace,
-              Happiness & Prosperity
+              {content.description}
             </p>
-            <h2 className="hero-phone">8929255775</h2>
+            <h2 className="hero-phone">{content.phone}</h2>
           </div>
         </Col>
 
