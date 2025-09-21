@@ -342,6 +342,56 @@ const CollectionDetail = () => {
         </section>
       )}
 
+      {/* FAQs Section */}
+      {collection.faqs && collection.faqs.length > 0 && (
+        <section style={{ 
+          background: '#F9F6EE', 
+          padding: '80px 20px',
+          fontFamily: 'Poppins, sans-serif'
+        }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <h2 style={{
+              fontSize: 'clamp(32px, 6vw, 42px)',
+              fontWeight: '700',
+              color: '#691B19',
+              marginBottom: '40px',
+              fontFamily: 'Bastoni, serif',
+              textAlign: 'center'
+            }}>
+              Frequently Asked Questions
+            </h2>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {collection.faqs.map((faq, index) => (
+                <div key={index} style={{
+                  background: '#fff',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  border: '1px solid rgba(105, 27, 25, 0.1)'
+                }}>
+                  <h4 style={{
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    color: '#691B19',
+                    marginBottom: '8px'
+                  }}>
+                    {faq.question}
+                  </h4>
+                  <p style={{
+                    fontSize: '14px',
+                    color: '#666',
+                    margin: 0,
+                    lineHeight: '1.6'
+                  }}>
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Customer Reviews Section */}
       <section style={{ 
         background: '#fff', 

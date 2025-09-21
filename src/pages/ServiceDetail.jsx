@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Row, Col, Spin, Tag, Card } from 'antd';
-import { ArrowLeftOutlined, CalendarOutlined, DollarOutlined, ToolOutlined, StarOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, CalendarOutlined, DollarOutlined, ToolOutlined, StarOutlined, EditOutlined } from '@ant-design/icons';
 import { frontendAPI, testimonialsAPI } from '../utils/api';
+import { Form, Input, Rate, Modal, message } from 'antd';
 import featuredBG from '../assets/featuredBG.png';
 import bottomStrip from '../assets/bottom-strip.png';
 
@@ -336,6 +337,56 @@ const ServiceDetail = () => {
           </Row>
         </div>
       </section>
+
+      {/* FAQs Section */}
+      {service.faqs && service.faqs.length > 0 && (
+        <section style={{ 
+          background: '#fff', 
+          padding: '80px 20px',
+          fontFamily: 'Poppins, sans-serif'
+        }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <h2 style={{
+              fontSize: 'clamp(32px, 6vw, 42px)',
+              fontWeight: '700',
+              color: '#691B19',
+              marginBottom: '40px',
+              fontFamily: 'Bastoni, serif',
+              textAlign: 'center'
+            }}>
+              Frequently Asked Questions
+            </h2>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {service.faqs.map((faq, index) => (
+                <div key={index} style={{
+                  background: '#F9F6EE',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  border: '1px solid rgba(105, 27, 25, 0.1)'
+                }}>
+                  <h4 style={{
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    color: '#691B19',
+                    marginBottom: '8px'
+                  }}>
+                    {faq.question}
+                  </h4>
+                  <p style={{
+                    fontSize: '14px',
+                    color: '#666',
+                    margin: 0,
+                    lineHeight: '1.6'
+                  }}>
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Testimonials Section */}
       <section style={{ 

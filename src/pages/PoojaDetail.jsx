@@ -387,56 +387,54 @@ const PoojaDetail = () => {
       </section>
 
       {/* FAQs Section */}
-      <section style={{ 
-        background: '#fff', 
-        padding: '80px 20px',
-        fontFamily: 'Poppins, sans-serif'
-      }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h2 style={{
-            fontSize: 'clamp(32px, 6vw, 42px)',
-            fontWeight: '700',
-            color: '#691B19',
-            marginBottom: '40px',
-            fontFamily: 'Bastoni, serif',
-            textAlign: 'center'
-          }}>
-            Frequently Asked Questions
-          </h2>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {[
-              { q: 'How long does the pooja take?', a: 'The duration varies based on the specific rituals, typically 1-3 hours.' },
-              { q: 'What items do I need to arrange?', a: 'We provide all necessary items as part of our service packages.' },
-              { q: 'Can the pooja be performed at my home?', a: 'Yes, we offer home visit services for most poojas.' }
-            ].map((faq, index) => (
-              <div key={index} style={{
-                background: '#F9F6EE',
-                borderRadius: '12px',
-                padding: '20px',
-                border: '1px solid rgba(105, 27, 25, 0.1)'
-              }}>
-                <h4 style={{
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  color: '#691B19',
-                  marginBottom: '8px'
+      {pooja.faqs && pooja.faqs.length > 0 && (
+        <section style={{ 
+          background: '#fff', 
+          padding: '80px 20px',
+          fontFamily: 'Poppins, sans-serif'
+        }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <h2 style={{
+              fontSize: 'clamp(32px, 6vw, 42px)',
+              fontWeight: '700',
+              color: '#691B19',
+              marginBottom: '40px',
+              fontFamily: 'Bastoni, serif',
+              textAlign: 'center'
+            }}>
+              Frequently Asked Questions
+            </h2>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {pooja.faqs.map((faq, index) => (
+                <div key={index} style={{
+                  background: '#F9F6EE',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  border: '1px solid rgba(105, 27, 25, 0.1)'
                 }}>
-                  {faq.q}
-                </h4>
-                <p style={{
-                  fontSize: '14px',
-                  color: '#666',
-                  margin: 0,
-                  lineHeight: '1.6'
-                }}>
-                  {faq.a}
-                </p>
-              </div>
-            ))}
+                  <h4 style={{
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    color: '#691B19',
+                    marginBottom: '8px'
+                  }}>
+                    {faq.question}
+                  </h4>
+                  <p style={{
+                    fontSize: '14px',
+                    color: '#666',
+                    margin: 0,
+                    lineHeight: '1.6'
+                  }}>
+                    {faq.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Testimonials Section */}
       <section style={{ 

@@ -42,6 +42,7 @@ const CollectionEditor = () => {
     formData.append('stock', values.stock);
 
     formData.append('attributes', JSON.stringify(values.attributes || []));
+    formData.append('faqs', JSON.stringify(values.faqs || []));
     formData.append('isActive', values.isActive || true);
     
     if (fileList.length > 0 && fileList[0].originFileObj) {
@@ -183,6 +184,66 @@ const CollectionEditor = () => {
               </>
             )}
           </Form.List>
+
+          <Card title="FAQs" style={{ marginBottom: 16 }}>
+            <Form.List name="faqs">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Card key={key} size="small" style={{ marginBottom: 16 }}>
+                      <Row gutter={16}>
+                        <Col span={24}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'question']}
+                            label="Question"
+                            rules={[{ required: true }]}
+                          >
+                            <Input placeholder="Enter FAQ question" />
+                          </Form.Item>
+                        </Col>
+                        <Col span={20}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'answer']}
+                            label="Answer"
+                            rules={[{ required: true }]}
+                          >
+                            <Input.TextArea rows={3} placeholder="Enter FAQ answer" />
+                          </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'order']}
+                            label="Order"
+                          >
+                            <InputNumber min={0} placeholder="0" style={{ width: '100%' }} />
+                          </Form.Item>
+                          <Button
+                            type="dashed"
+                            onClick={() => remove(name)}
+                            danger
+                            style={{ marginTop: 8, width: '100%' }}
+                          >
+                            Remove
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Card>
+                  ))}
+                  <Button
+                    type="dashed"
+                    onClick={() => add({ order: fields.length })}
+                    icon={<PlusOutlined />}
+                    style={{ width: '100%' }}
+                  >
+                    Add FAQ
+                  </Button>
+                </>
+              )}
+            </Form.List>
+          </Card>
 
           <Divider />
           
