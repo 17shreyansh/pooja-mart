@@ -122,6 +122,7 @@ const HowItWorks = () => {
                 fontFamily: "Poppins",
                 width: "100%",
                 fontSize: "14px",
+                marginTop: "10px"
               }}
             >
               {btn}
