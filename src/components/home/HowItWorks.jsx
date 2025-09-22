@@ -11,30 +11,29 @@ import bottomStrip from "../../assets/bottom-strip.png";
 import image01 from "../../assets/image01.png";
 
 const HowItWorks = () => {
+  // Static images array
+  const staticImages = [step1, step2, step3, step4];
+  
   const [content, setContent] = useState({
     heading: 'How It works',
     steps: [
       {
         number: "01",
-        image: step1,
         title: "Select Pooja or Product",
         description: "Browse and pick Pooja kits & items",
       },
       {
         number: "02",
-        image: step2,
         title: "Customize & Book",
         description: "Choose date, time & purpose (for pooja)",
       },
       {
         number: "03",
-        image: step3,
         title: "Easy Payment",
         description: "Secure online transactions",
       },
       {
         number: "04",
-        image: step4,
         title: "Experience the Divine",
         description: "Pandit Ji performs rituals or products reach home",
       },
@@ -55,7 +54,17 @@ const HowItWorks = () => {
     try {
       const response = await homePageAPI.getContent();
       if (response.data.data.howItWorks) {
-        setContent(prev => ({ ...prev, ...response.data.data.howItWorks }));
+        setContent(prev => ({ 
+          ...prev, 
+          heading: response.data.data.howItWorks.heading || prev.heading,
+          steps: response.data.data.howItWorks.steps ? response.data.data.howItWorks.steps.map((step, index) => ({
+            ...prev.steps[index],
+            number: step.number || prev.steps[index].number,
+            title: step.title || prev.steps[index].title,
+            description: step.description || prev.steps[index].description
+          })) : prev.steps,
+          buttons: response.data.data.howItWorks.buttons || prev.buttons
+        }));
       }
     } catch (error) {
       console.error('Error fetching how it works content:', error);
@@ -87,12 +96,12 @@ const HowItWorks = () => {
 
       {/* Steps */}
       <Row gutter={[32, 32]} justify="center" style={{ marginBottom: "40px" }}>
-        {content.steps.map((step, index) => (
+        {Array.isArray(content.steps) && content.steps.map((step, index) => (
           <Col xs={24} md={6} key={index} style={{ textAlign: "center" }}>
             <div>
               <img
-                src={step.image}
-                alt={step.title}
+                src={staticImages[index]}
+                alt={step.title || ''}
                 style={{ height: "90px", marginBottom: "10px" }}
               />
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -105,7 +114,7 @@ const HowItWorks = () => {
                     fontFamily: "Bastoni",
                   }}
                 >
-                  {step.number}
+                  {step.number || ''}
                 </h3>
                 <div
                   style={{
@@ -116,9 +125,9 @@ const HowItWorks = () => {
                   }}
                 >
                   <h4 style={{ fontWeight: "500", color: "#691B19", fontFamily: "Poppins" }}>
-                    {step.title}
+                    {step.title || ''}
                   </h4>
-                  <p style={{ fontSize: "10px", color: "#444", margin: 0, fontFamily: "Poppins" }}>{step.description}</p>
+                  <p style={{ fontSize: "10px", color: "#444", margin: 0, fontFamily: "Poppins" }}>{step.description || ''}</p>
                 </div>
               </div>
             </div>
@@ -128,7 +137,7 @@ const HowItWorks = () => {
 
       {/* Buttons */}
       <Row gutter={[16, 16]} justify="center" style={{ marginTop: "40px" }}>
-        {content.buttons.map((btn, i) => (
+        {Array.isArray(content.buttons) && content.buttons.map((btn, i) => (
           <Col xs={12} sm={8} md={6} lg={6} key={i}>
             <Button
               style={{
@@ -143,7 +152,7 @@ const HowItWorks = () => {
                 marginTop: "10px"
               }}
             >
-              {btn}
+              {typeof btn === 'string' ? btn : ''}
             </Button>
           </Col>
         ))}

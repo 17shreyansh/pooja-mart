@@ -46,7 +46,7 @@ const UserAuth = () => {
     );
 
     return (
-      <Dropdown overlay={userMenu} trigger={['hover']}>
+      <Dropdown menu={userMenu} trigger={['hover']}>
         <div style={{ 
           display: 'flex', 
           alignItems: 'center', 
@@ -142,21 +142,22 @@ const Navbar = () => {
       const response = await frontendAPI.search({ q: query });
       const { suggestions } = response.data.data;
       
-      const options = suggestions.map((item, index) => ({
+      const options = Array.isArray(suggestions) ? suggestions.map((item, index) => ({
         key: index,
-        value: item.text,
+        value: item.text || '',
         label: (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>{item.text}</span>
-            <span style={{ fontSize: '12px', color: '#999' }}>{item.type}</span>
+            <span>{String(item.text || '')}</span>
+            <span style={{ fontSize: '12px', color: '#999' }}>{String(item.type || '')}</span>
           </div>
         ),
         type: item.type
-      }));
+      })) : [];
       
       setSearchResults(options);
     } catch (error) {
       console.error('Search error:', error);
+      setSearchResults([]);
     }
   };
 
@@ -219,19 +220,19 @@ const Navbar = () => {
             Home
           </Link>
 
-          <Dropdown menu={{ items: categories.products?.map((cat, index) => ({ key: index, label: <Link to={`/shop?category=${cat}`}>{cat}</Link> })) || [] }} trigger={['hover']}>
+          <Dropdown menu={{ items: Array.isArray(categories.products) ? categories.products.map((cat, index) => ({ key: index, label: <Link to={`/shop?category=${cat}`}>{String(cat)}</Link> })) : [] }} trigger={['hover']}>
             <Link to="/shop" style={{ color: "#701a1a", textDecoration: "none" }}>
               Shop <DownOutlined style={{ fontSize: '10px' }} />
             </Link>
           </Dropdown>
 
-          <Dropdown menu={{ items: categories.poojas?.map((cat, index) => ({ key: index, label: <Link to={`/poojas?category=${cat}`}>{cat}</Link> })) || [] }} trigger={['hover']}>
+          <Dropdown menu={{ items: Array.isArray(categories.poojas) ? categories.poojas.map((cat, index) => ({ key: index, label: <Link to={`/poojas?category=${cat}`}>{String(cat)}</Link> })) : [] }} trigger={['hover']}>
             <Link to="/poojas" style={{ color: "#701a1a", textDecoration: "none" }}>
               Book a Pooja <DownOutlined style={{ fontSize: '10px' }} />
             </Link>
           </Dropdown>
 
-          <Dropdown menu={{ items: categories.services?.map((cat, index) => ({ key: index, label: <Link to={`/services?category=${cat}`}>{cat}</Link> })) || [] }} trigger={['hover']}>
+          <Dropdown menu={{ items: Array.isArray(categories.services) ? categories.services.map((cat, index) => ({ key: index, label: <Link to={`/services?category=${cat}`}>{String(cat)}</Link> })) : [] }} trigger={['hover']}>
             <Link to="/services" style={{ color: "#701a1a", textDecoration: "none" }}>
               Services <DownOutlined style={{ fontSize: '10px' }} />
             </Link>

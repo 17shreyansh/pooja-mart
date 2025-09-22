@@ -59,7 +59,7 @@ const OurServices = () => {
             1024: { slidesPerView: 4 }
           }}
         >
-          {services.map((service, index) => (
+          {Array.isArray(services) && services.map((service, index) => (
             <SwiperSlide key={index}>
               <Card
                 hoverable

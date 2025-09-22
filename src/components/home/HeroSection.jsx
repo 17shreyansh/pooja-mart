@@ -12,9 +12,7 @@ const HeroSection = () => {
   const [content, setContent] = useState({
     title: 'Pooja Samagri, Prasad & Pandit Ji – All at One Place',
     description: 'Complete Devotional Service at Your Doorstep – For Peace, Happiness & Prosperity',
-    phone: '8929255775',
-    backgroundImage: heroImage,
-    bannerImage: banner
+    phone: '8929255775'
   });
 
   useEffect(() => {
@@ -25,7 +23,12 @@ const HeroSection = () => {
     try {
       const response = await homePageAPI.getContent();
       if (response.data.data.hero) {
-        setContent(prev => ({ ...prev, ...response.data.data.hero }));
+        setContent(prev => ({ 
+          ...prev, 
+          title: response.data.data.hero.title || prev.title,
+          description: response.data.data.hero.description || prev.description,
+          phone: response.data.data.hero.phone || prev.phone
+        }));
       }
     } catch (error) {
       console.error('Error fetching hero content:', error);
@@ -48,11 +51,11 @@ const HeroSection = () => {
 
   return (
     <section className="hero-section" style={{
-      backgroundImage: `url(${content.backgroundImage || heroImage})`
+      backgroundImage: `url(${heroImage})`
     }}>
       {/* Banner touching navbar - Hidden on mobile */}
       <img
-        src={content.bannerImage || banner}
+        src={banner}
         alt="Banner"
         className="hero-banner"
       />

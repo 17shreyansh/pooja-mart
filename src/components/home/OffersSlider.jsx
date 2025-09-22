@@ -47,7 +47,7 @@ const OffersSlider = () => {
   return (
     <div className="offers-slider">
       <div className="slider-container">
-        {offers.map((offer, index) => (
+        {Array.isArray(offers) && offers.map((offer, index) => (
           <div
             key={offer._id}
             className={`slide ${index === currentSlide ? 'active' : ''}`}
@@ -87,7 +87,7 @@ const OffersSlider = () => {
             </button>
             
             <div className="slider-dots">
-              {offers.map((_, index) => (
+              {Array.isArray(offers) && offers.map((_, index) => (
                 <button
                   key={index}
                   className={`dot ${index === currentSlide ? 'active' : ''}`}

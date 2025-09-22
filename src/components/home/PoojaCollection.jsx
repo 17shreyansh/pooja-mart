@@ -61,7 +61,7 @@ const PoojaCollection = () => {
         </h2>
 
         <Row gutter={[8, 12]} justify="center">
-          {poojas.map((pooja, index) => (
+          {Array.isArray(poojas) && poojas.map((pooja, index) => (
             <Col key={index} xs={12} sm={12} md={6} lg={6} xl={6}>
               <div style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '0 4px' }}>
                 <PoojaCard

@@ -71,7 +71,7 @@ const FeaturedPoojas = () => {
             1024: { slidesPerView: 4 }
           }}
         >
-          {poojas.map((pooja, index) => (
+          {Array.isArray(poojas) && poojas.map((pooja, index) => (
             <SwiperSlide key={index}>
               <Card
                 hoverable

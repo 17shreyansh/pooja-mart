@@ -10,7 +10,6 @@ const HomePageEditor = () => {
   const [loading, setLoading] = useState(false);
   const [heroForm] = Form.useForm();
   const [howItWorksForm] = Form.useForm();
-  const [ctaForm] = Form.useForm();
 
   useEffect(() => {
     fetchHomePageData();
@@ -19,11 +18,10 @@ const HomePageEditor = () => {
   const fetchHomePageData = async () => {
     try {
       const response = await adminAPI.get('/home-page');
-      const { hero, howItWorks, cta } = response.data.data;
+      const { hero, howItWorks } = response.data.data;
       
       if (hero) heroForm.setFieldsValue(hero);
       if (howItWorks) howItWorksForm.setFieldsValue(howItWorks);
-      if (cta) ctaForm.setFieldsValue(cta);
     } catch (error) {
       console.error('Error fetching home page data:', error);
     }
@@ -78,20 +76,6 @@ const HomePageEditor = () => {
                 <Input placeholder="Enter phone number" />
               </Form.Item>
 
-              <Form.Item
-                label="Background Image URL"
-                name="backgroundImage"
-              >
-                <Input placeholder="Enter background image URL" />
-              </Form.Item>
-
-              <Form.Item
-                label="Banner Image URL"
-                name="bannerImage"
-              >
-                <Input placeholder="Enter banner image URL" />
-              </Form.Item>
-
               <Form.Item>
                 <Button
                   type="primary"
@@ -121,7 +105,7 @@ const HomePageEditor = () => {
                 <Input placeholder="Enter section heading" />
               </Form.Item>
 
-              <Divider>Steps</Divider>
+              <Divider>Steps (Images are static, only text is editable)</Divider>
               
               {[0, 1, 2, 3].map((index) => (
                 <Card key={index} size="small" style={{ marginBottom: 16 }}>
@@ -150,13 +134,6 @@ const HomePageEditor = () => {
                     >
                       <Input placeholder="Enter step description" />
                     </Form.Item>
-                    
-                    <Form.Item
-                      label="Image URL"
-                      name={['steps', index, 'image']}
-                    >
-                      <Input placeholder="Enter image URL" />
-                    </Form.Item>
                   </Space>
                 </Card>
               ))}
@@ -182,50 +159,6 @@ const HomePageEditor = () => {
                   icon={<SaveOutlined />}
                 >
                   Save How It Works Section
-                </Button>
-              </Form.Item>
-            </Form>
-          </Card>
-        </TabPane>
-
-        <TabPane tab="CTA Section" key="cta">
-          <Card>
-            <Form
-              form={ctaForm}
-              layout="vertical"
-              onFinish={(values) => handleSave('cta', values)}
-            >
-              <Form.Item
-                label="CTA Title"
-                name="ctaTitle"
-                rules={[{ required: true, message: 'Please enter CTA title' }]}
-              >
-                <TextArea rows={2} placeholder="Enter CTA title" />
-              </Form.Item>
-
-              <Form.Item
-                label="Button Text"
-                name="ctaButtonText"
-                rules={[{ required: true, message: 'Please enter button text' }]}
-              >
-                <Input placeholder="Enter button text" />
-              </Form.Item>
-
-              <Form.Item
-                label="Background Image URL"
-                name="ctaBackgroundImage"
-              >
-                <Input placeholder="Enter background image URL" />
-              </Form.Item>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={loading}
-                  icon={<SaveOutlined />}
-                >
-                  Save CTA Section
                 </Button>
               </Form.Item>
             </Form>

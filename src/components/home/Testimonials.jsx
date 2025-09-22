@@ -77,7 +77,7 @@ const Testimonials = () => {
             1200: { slidesPerView: 4 }
           }}
         >
-          {testimonials.map((item, index) => (
+          {Array.isArray(testimonials) && testimonials.map((item, index) => (
             <SwiperSlide key={index}>
               <TestimonialCard
                 testimonial={item.testimonial}
