@@ -48,3 +48,4 @@ export const testimonialsAPI = {
   getAll: (params) => api.get('/testimonials', { params }),
   create: (data) => userApi.post('/testimonials', data),
 };
+
