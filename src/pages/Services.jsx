@@ -151,20 +151,20 @@ const Services = () => {
             >
               All Services
             </Button>
-            {categories.map((category, index) => (
+            {categories.map((category) => (
               <Button 
-                key={index} 
-                onClick={() => setSelectedCategory(category)}
+                key={category._id || category} 
+                onClick={() => setSelectedCategory(category._id || category)}
                 style={{
                   padding: '8px 20px',
                   borderRadius: '20px',
                   border: '1px solid #691B19',
-                  background: selectedCategory === category ? '#691B19' : 'white',
-                  color: selectedCategory === category ? 'white' : '#691B19',
+                  background: selectedCategory === (category._id || category) ? '#691B19' : 'white',
+                  color: selectedCategory === (category._id || category) ? 'white' : '#691B19',
                   fontSize: '14px'
                 }}
               >
-                {category}
+                {category.name || category}
               </Button>
             ))}
           </div>
@@ -187,7 +187,8 @@ const Services = () => {
                   cover={
                     <div style={{ position: 'relative', overflow: 'visible' }}>
                       <img
-                        src={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : '/placeholder.jpg'}
+                        src={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : '/src/assets/ser1.jpg'}
+                        onError={(e) => { e.target.src = '/src/assets/ser1.jpg'; }}
                         alt={service.title}
                         style={{ 
                           width: '100%', 

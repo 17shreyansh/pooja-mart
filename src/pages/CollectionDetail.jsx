@@ -127,7 +127,7 @@ const CollectionDetail = () => {
                 marginBottom: '20px'
               }}
             >
-              {collection.category}
+              {collection.category?.name || collection.category}
             </Tag>
             
             <h1 style={{
@@ -241,7 +241,7 @@ const CollectionDetail = () => {
                     <Col span={12}>
                       <div>
                         <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>Category</p>
-                        <p style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500' }}>{collection.category}</p>
+                        <p style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500' }}>{collection.category?.name || collection.category}</p>
                       </div>
                     </Col>
                     <Col span={12}>

@@ -75,13 +75,14 @@ const FeaturedPoojas = () => {
             <SwiperSlide key={index}>
               <Card
                 hoverable
-                onClick={() => navigate(`/pooja/${pooja._id}`)}
+                onClick={() => navigate(`/pooja/${pooja.slug || pooja._id}`)}
                 cover={
                   <div style={{ position: 'relative', overflow: 'visible' }}>
                     <img
-                      src={pooja.image ? `${API_BASE_URL}${pooja.image}` : '/placeholder.jpg'}
+                      src={pooja.image ? `${API_BASE_URL}${pooja.image}` : '/src/assets/fp1.jpg'}
                       alt={pooja.title}
                       style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover', borderRadius: '10px', background: 'none' }}
+                      onError={(e) => { e.target.src = '/src/assets/fp1.jpg'; }}
                     />
                     <Button
                       type="primary"

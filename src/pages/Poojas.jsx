@@ -127,6 +127,41 @@ const Poojas = () => {
         fontFamily: 'Poppins, sans-serif'
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+          {/* Categories Section */}
+          <div style={{ marginBottom: '40px', textAlign: 'center' }}>
+            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Button 
+                onClick={() => setSelectedCategory('')}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '20px',
+                  border: '1px solid #691B19',
+                  background: selectedCategory === '' ? '#691B19' : 'white',
+                  color: selectedCategory === '' ? 'white' : '#691B19',
+                  fontSize: '14px'
+                }}
+              >
+                All Poojas
+              </Button>
+              {categories.map((category) => (
+                <Button 
+                  key={category._id || category} 
+                  onClick={() => setSelectedCategory(category._id || category)}
+                  style={{
+                    padding: '8px 20px',
+                    borderRadius: '20px',
+                    border: '1px solid #691B19',
+                    background: selectedCategory === (category._id || category) ? '#691B19' : 'white',
+                    color: selectedCategory === (category._id || category) ? 'white' : '#691B19',
+                    fontSize: '14px'
+                  }}
+                >
+                  {category.name || category}
+                </Button>
+              ))}
+            </div>
+          </div>
+
           <h2 style={{
             fontSize: '32px',
             fontWeight: '600',
@@ -147,7 +182,8 @@ const Poojas = () => {
                   cover={
                     <div style={{ position: 'relative', overflow: 'visible' }}>
                       <img
-                        src={pooja.image ? `${import.meta.env.VITE_API_BASE_URL}${pooja.image}` : '/placeholder.jpg'}
+                        src={pooja.image ? `${import.meta.env.VITE_API_BASE_URL}${pooja.image}` : '/src/assets/fp1.jpg'}
+                        onError={(e) => { e.target.src = '/src/assets/fp1.jpg'; }}
                         alt={pooja.title}
                         style={{ 
                           width: '100%', 

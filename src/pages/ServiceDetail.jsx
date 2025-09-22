@@ -123,7 +123,7 @@ const ServiceDetail = () => {
                 marginBottom: '20px'
               }}
             >
-              {service.category}
+              {service.category?.name || service.category}
             </Tag>
             
             <h1 style={{
@@ -246,7 +246,7 @@ const ServiceDetail = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>Category</p>
-                      <p style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500' }}>{service.category}</p>
+                      <p style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500' }}>{service.category?.name || service.category}</p>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>Price</p>

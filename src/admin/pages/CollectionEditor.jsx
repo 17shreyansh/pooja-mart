@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Upload, Card, Row, Col, Switch, InputNumber, Space, Divider, App } from 'antd';
+import { Form, Input, Button, Upload, Card, Row, Col, Switch, InputNumber, Space, Divider, App, Select } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
-import { poojaCollectionAPI } from '../utils/api';
+import { poojaCollectionAPI, adminAPI } from '../utils/api';
 
 const CollectionEditor = () => {
   const { message } = App.useApp();
@@ -11,10 +11,21 @@ const CollectionEditor = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
+    fetchCategories();
     if (id) fetchCollection();
   }, [id]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await adminAPI.get('/categories');
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
 
   const fetchCollection = async () => {
     try {
@@ -83,7 +94,13 @@ const CollectionEditor = () => {
             </Col>
             <Col span={12}>
               <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-                <Input placeholder="e.g., Festival Kits, Daily Worship" />
+                <Select placeholder="Select a category">
+                  {categories.map(category => (
+                    <Select.Option key={category._id} value={category._id}>
+                      {category.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>

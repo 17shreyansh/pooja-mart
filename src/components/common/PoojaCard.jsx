@@ -9,7 +9,12 @@ const PoojaCard = ({ image, title, description, id, type = 'pooja', onClick }) =
     if (onClick) {
       onClick();
     } else {
-      navigate(`/${type}/${id}`);
+      const routeMap = {
+        pooja: 'pooja',
+        service: 'service', 
+        collection: 'collection'
+      };
+      navigate(`/${routeMap[type] || type}/${id}`);
     }
   };
   
@@ -50,6 +55,7 @@ const PoojaCard = ({ image, title, description, id, type = 'pooja', onClick }) =
             objectFit: 'cover',
             borderRadius: '12px'
           }}
+          onError={(e) => { e.target.src = '/src/assets/fp3.jpg'; }}
         />
       </div>
 
@@ -115,6 +121,7 @@ const PoojaCard = ({ image, title, description, id, type = 'pooja', onClick }) =
               e.preventDefault();
               e.stopPropagation();
               navigate(`/contact?service=${encodeURIComponent(title)}&type=${type}`);
+              return false;
             }}
           >
             Book Now

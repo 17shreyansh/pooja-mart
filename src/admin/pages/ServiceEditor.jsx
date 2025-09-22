@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Upload, Card, Row, Col, Switch, InputNumber, Space, App } from 'antd';
+import { Form, Input, Button, Upload, Card, Row, Col, Switch, InputNumber, Space, App, Select } from 'antd';
 import { UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
-import { servicesAPI } from '../utils/api';
+import { servicesAPI, adminAPI } from '../utils/api';
 
 const ServiceEditor = () => {
   const { message } = App.useApp();
@@ -11,10 +11,21 @@ const ServiceEditor = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
+    fetchCategories();
     if (id) fetchService();
   }, [id]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await adminAPI.get('/categories');
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
 
   const fetchService = async () => {
     try {
@@ -76,7 +87,13 @@ const ServiceEditor = () => {
             </Col>
             <Col span={12}>
               <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-                <Input placeholder="e.g., Priest Services, Decoration" />
+                <Select placeholder="Select a category">
+                  {categories.map(category => (
+                    <Select.Option key={category._id} value={category._id}>
+                      {category.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>

@@ -3,7 +3,7 @@ import { Form, Input, Button, Upload, Card, Row, Col, Switch, Space, Select, App
 import { UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { InputNumber } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
-import { poojasAPI, servicesAPI, poojaCollectionAPI } from '../utils/api';
+import { poojasAPI, servicesAPI, poojaCollectionAPI, adminAPI } from '../utils/api';
 
 const PoojaEditor = () => {
   const { message } = App.useApp();
@@ -14,12 +14,23 @@ const PoojaEditor = () => {
   const [loading, setLoading] = useState(false);
   const [services, setServices] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
+    fetchCategories();
     fetchServices();
     fetchCollections();
     if (id) fetchPooja();
   }, [id]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await adminAPI.get('/categories');
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
 
   const fetchServices = async () => {
     try {
@@ -104,7 +115,13 @@ const PoojaEditor = () => {
             </Col>
             <Col span={12}>
               <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-                <Input placeholder="e.g., Festival, Special Occasion" />
+                <Select placeholder="Select a category">
+                  {categories.map(category => (
+                    <Select.Option key={category._id} value={category._id}>
+                      {category.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>

@@ -49,7 +49,12 @@ const Services = () => {
       key: 'description',
       render: (text) => text ? text.substring(0, 50) + '...' : 'No description'
     },
-    { title: 'Category', dataIndex: 'category', key: 'category' },
+    { 
+      title: 'Category', 
+      dataIndex: 'category', 
+      key: 'category',
+      render: (category) => category?.name || 'No category'
+    },
     { 
       title: 'Price', 
       dataIndex: 'price', 
@@ -105,7 +110,9 @@ const Services = () => {
             allowClear
           >
             {categories.map(cat => (
-              <Select.Option key={cat} value={cat}>{cat}</Select.Option>
+              <Select.Option key={cat._id || cat} value={cat._id || cat}>
+                {cat.name || cat}
+              </Select.Option>
             ))}
           </Select>
         </div>

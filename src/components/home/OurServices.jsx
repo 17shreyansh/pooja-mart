@@ -63,12 +63,14 @@ const OurServices = () => {
             <SwiperSlide key={index}>
               <Card
                 hoverable
+                onClick={() => navigate(`/service/${service.slug || service._id}`)}
                 cover={
                   <div style={{ position: 'relative', overflow: 'visible' }}>
                     <img
-                      src={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : '/placeholder.jpg'}
+                      src={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : '/src/assets/ser1.jpg'}
                       alt={service.title}
                       style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '20px' }}
+                      onError={(e) => { e.target.src = '/src/assets/ser1.jpg'; }}
                     />
                     <Button
                       type="primary"

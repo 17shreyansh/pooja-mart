@@ -34,6 +34,7 @@ const AdminLayout = ({ children, onLogout, admin }) => {
     if (path.includes('/services')) return 'services';
     if (path.includes('/poojas')) return 'poojas';
     if (path.includes('/collections')) return 'collections';
+    if (path.includes('/categories')) return 'categories';
     if (path.includes('/offers')) return 'offers';
     if (path.includes('/user-testimonials')) return 'user-testimonials';
     if (path.includes('/testimonials')) return 'testimonials';
@@ -61,6 +62,7 @@ const AdminLayout = ({ children, onLogout, admin }) => {
   const menuItems = [
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: 'leads', icon: <ContactsOutlined />, label: 'Leads' },
+    { key: 'categories', icon: <SettingOutlined />, label: 'Categories' },
     { key: 'services', icon: <ToolOutlined />, label: 'Services' },
     { key: 'poojas', icon: <StarOutlined />, label: 'Poojas' },
     { key: 'collections', icon: <ShoppingOutlined />, label: 'Collections' },

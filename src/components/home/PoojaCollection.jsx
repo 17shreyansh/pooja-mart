@@ -65,7 +65,7 @@ const PoojaCollection = () => {
             <Col key={index} xs={12} sm={12} md={6} lg={6} xl={6}>
               <div style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '0 4px' }}>
                 <PoojaCard
-                  image={pooja.image ? `${import.meta.env.VITE_API_BASE_URL}${pooja.image}` : '/placeholder.jpg'}
+                  image={pooja.image ? `${import.meta.env.VITE_API_BASE_URL}${pooja.image}` : '/src/assets/fp2.jpg'}
                   title={pooja.title}
                   description={pooja.description}
                   id={pooja._id}

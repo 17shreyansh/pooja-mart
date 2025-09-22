@@ -123,7 +123,7 @@ const PoojaDetail = () => {
                 marginBottom: '20px'
               }}
             >
-              {pooja.category}
+              {pooja.category?.name || pooja.category}
             </Tag>
             
             <h1 style={{
