@@ -502,8 +502,6 @@ const ServiceDetail = () => {
           }} 
           layout="vertical"
         >
-
-          
           <Form.Item
             name="rating"
             label="Rating"

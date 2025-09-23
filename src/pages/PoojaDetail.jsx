@@ -550,8 +550,6 @@ const PoojaDetail = () => {
           }} 
           layout="vertical"
         >
-
-          
           <Form.Item
             name="rating"
             label="Rating"
