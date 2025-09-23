@@ -197,7 +197,6 @@ const Login = () => {
               </Link>
             </span>
           </div>
-          </Form>
         </Card>
 
         <img
