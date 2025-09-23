@@ -1,0 +1,26 @@
+.loading-button {
+  font-family: 'Poppins', sans-serif !important;
+  transition: all 0.3s ease !important;
+}
+
+.loading-button.ant-btn-loading {
+  opacity: 0.8;
+}
+
+.loading-button .ant-btn-loading-icon {
+  color: inherit !important;
+}
+
+/* Custom loading spinner for buttons */
+.loading-button .ant-btn-loading-icon .anticon-loading {
+  animation: loadingCircle 1s infinite linear;
+}
+
+@keyframes loadingCircle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

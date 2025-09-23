@@ -30,6 +30,8 @@ export const frontendAPI = {
   getCollections: (params) => api.get('/pooja-collection', { params }),
   getCollectionById: (id) => api.get(`/pooja-collection/${id}`),
   getCollectionBySlug: (slug) => api.get(`/pooja-collection/slug/${slug}`),
+  getCategories: () => api.get('/categories'),
+  getCategoriesByType: (type) => api.get(`/categories/by-type/${type}`),
   getTestimonials: () => api.get('/testimonials'),
   getFAQs: () => api.get('/faqs'),
   submitLead: (data) => api.post('/leads', data),
@@ -38,10 +40,11 @@ export const frontendAPI = {
 };
 
 export const userAuthAPI = {
-  register: (data) => api.post('/user-auth/register', data),
+  sendOTP: (data) => api.post('/user-auth/send-otp', data),
+  verifyOTP: (data) => api.post('/user-auth/verify-otp', data),
   login: (data) => api.post('/user-auth/login', data),
+  verifyLoginOTP: (data) => api.post('/user-auth/verify-login-otp', data),
   verify: () => userApi.get('/user-auth/verify'),
-  changePassword: (data) => userApi.put('/user-auth/change-password', data),
 };
 
 export const testimonialsAPI = {

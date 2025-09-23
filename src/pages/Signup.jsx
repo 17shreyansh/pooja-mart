@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Card, message } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
+import { MailOutlined, SafetyOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { userAuthAPI } from '../utils/api';
 import featuredBG from '../assets/featuredBG.png';
@@ -8,18 +8,33 @@ import bottomStrip from '../assets/bottom-strip.png';
 
 const Signup = () => {
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1);
+  const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
-  const handleSignup = async (values) => {
+  const handleSendOTP = async (values) => {
     setLoading(true);
     try {
-      const response = await userAuthAPI.register(values);
+      await userAuthAPI.sendOTP({ email: values.email });
+      setEmail(values.email);
+      setStep(2);
+      message.success('OTP sent to your email!');
+    } catch (error) {
+      message.error(error.response?.data?.message || 'Failed to send OTP');
+    }
+    setLoading(false);
+  };
+
+  const handleVerifyOTP = async (values) => {
+    setLoading(true);
+    try {
+      const response = await userAuthAPI.verifyOTP({ email, otp: values.otp });
       localStorage.setItem('userToken', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       message.success('Account created successfully!');
       navigate('/user/dashboard');
     } catch (error) {
-      message.error(error.response?.data?.message || 'Registration failed');
+      message.error(error.response?.data?.message || 'Invalid OTP');
     }
     setLoading(false);
   };
@@ -58,147 +73,130 @@ const Signup = () => {
               marginBottom: '8px',
               fontFamily: 'Bastoni, serif'
             }}>
-              Create Account
+              {step === 1 ? 'Create Account' : 'Verify Email'}
             </h1>
             <p style={{
               fontSize: '16px',
               color: '#666',
               fontFamily: 'Poppins, sans-serif'
             }}>
-              Join our spiritual community
+              {step === 1 ? 'Enter your email to get started' : `Enter OTP sent to ${email}`}
             </p>
           </div>
 
-          <Form onFinish={handleSignup} layout="vertical">
-            <Form.Item
-              name="name"
-              rules={[{ required: true, message: 'Please enter your name' }]}
-            >
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="Full Name"
-                size="large"
-                style={{
-                  borderRadius: '8px',
-                  fontFamily: 'Poppins, sans-serif'
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="email"
-              rules={[
-                { required: true, message: 'Please enter your email' },
-                { type: 'email', message: 'Please enter a valid email' }
-              ]}
-            >
-              <Input
-                prefix={<MailOutlined />}
-                placeholder="Email"
-                size="large"
-                style={{
-                  borderRadius: '8px',
-                  fontFamily: 'Poppins, sans-serif'
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="phone"
-              rules={[{ required: true, message: 'Please enter your phone number' }]}
-            >
-              <Input
-                prefix={<PhoneOutlined />}
-                placeholder="Phone Number"
-                size="large"
-                style={{
-                  borderRadius: '8px',
-                  fontFamily: 'Poppins, sans-serif'
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="password"
-              rules={[
-                { required: true, message: 'Please enter your password' },
-                { min: 6, message: 'Password must be at least 6 characters' }
-              ]}
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="Password"
-                size="large"
-                style={{
-                  borderRadius: '8px',
-                  fontFamily: 'Poppins, sans-serif'
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="confirmPassword"
-              dependencies={['password']}
-              rules={[
-                { required: true, message: 'Please confirm your password' },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error('Passwords do not match'));
-                  },
-                }),
-              ]}
-            >
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="Confirm Password"
-                size="large"
-                style={{
-                  borderRadius: '8px',
-                  fontFamily: 'Poppins, sans-serif'
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                size="large"
-                style={{
-                  width: '100%',
-                  background: 'linear-gradient(135deg, #691B19, #8B2635)',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontFamily: 'Poppins, sans-serif',
-                  fontWeight: '600',
-                  fontSize: '16px',
-                  height: '48px'
-                }}
+          {step === 1 ? (
+            <Form onFinish={handleSendOTP} layout="vertical">
+              <Form.Item
+                name="email"
+                rules={[
+                  { required: true, message: 'Please enter your email' },
+                  { type: 'email', message: 'Please enter a valid email' }
+                ]}
               >
-                Create Account
-              </Button>
-            </Form.Item>
+                <Input
+                  prefix={<MailOutlined />}
+                  placeholder="Email Address"
+                  size="large"
+                  style={{
+                    borderRadius: '8px',
+                    fontFamily: 'Poppins, sans-serif'
+                  }}
+                />
+              </Form.Item>
 
-            <div style={{ textAlign: 'center' }}>
-              <span style={{ color: '#666', fontFamily: 'Poppins, sans-serif' }}>
-                Already have an account?{' '}
-                <Link 
-                  to="/login" 
-                  style={{ 
-                    color: '#691B19', 
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  size="large"
+                  style={{
+                    width: '100%',
+                    background: 'linear-gradient(135deg, #691B19, #8B2635)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontFamily: 'Poppins, sans-serif',
                     fontWeight: '600',
-                    textDecoration: 'none'
+                    fontSize: '16px',
+                    height: '48px'
                   }}
                 >
-                  Sign In
-                </Link>
-              </span>
-            </div>
-          </Form>
+                  Send OTP
+                </Button>
+              </Form.Item>
+            </Form>
+          ) : (
+            <Form onFinish={handleVerifyOTP} layout="vertical">
+              <Form.Item
+                name="otp"
+                rules={[
+                  { required: true, message: 'Please enter the OTP' },
+                  { len: 6, message: 'OTP must be 6 digits' }
+                ]}
+              >
+                <Input
+                  prefix={<SafetyOutlined />}
+                  placeholder="Enter 6-digit OTP"
+                  size="large"
+                  maxLength={6}
+                  style={{
+                    borderRadius: '8px',
+                    fontFamily: 'Poppins, sans-serif',
+                    textAlign: 'center',
+                    fontSize: '18px',
+                    letterSpacing: '4px'
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  size="large"
+                  style={{
+                    width: '100%',
+                    background: 'linear-gradient(135deg, #691B19, #8B2635)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontFamily: 'Poppins, sans-serif',
+                    fontWeight: '600',
+                    fontSize: '16px',
+                    height: '48px'
+                  }}
+                >
+                  Verify & Create Account
+                </Button>
+              </Form.Item>
+
+              <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                <Button
+                  type="link"
+                  onClick={() => setStep(1)}
+                  style={{ color: '#691B19', fontFamily: 'Poppins, sans-serif' }}
+                >
+                  Change Email
+                </Button>
+              </div>
+            </Form>
+          )}
+
+          <div style={{ textAlign: 'center' }}>
+            <span style={{ color: '#666', fontFamily: 'Poppins, sans-serif' }}>
+              Already have an account?{' '}
+              <Link 
+                to="/login" 
+                style={{ 
+                  color: '#691B19', 
+                  fontWeight: '600',
+                  textDecoration: 'none'
+                }}
+              >
+                Sign In
+              </Link>
+            </span>
+          </div>
         </Card>
 
         <img

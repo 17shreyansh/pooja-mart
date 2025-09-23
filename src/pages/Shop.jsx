@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Row, Col, Input, Select, Empty } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
+import { Card, Button, Row, Col, Input, Select, Empty, Pagination } from 'antd';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { SearchOutlined } from '@ant-design/icons';
 import { frontendAPI } from '../utils/api';
 import PoojaCard from '../components/common/PoojaCard';
 import featuredBG from '../assets/featuredBG.png';
 import bottomStrip from '../assets/bottom-strip.png';
-import ctaBG from '../assets/ctaBG.jpg';
 
 // Add fonts
 const fontStyles = `
@@ -29,12 +28,42 @@ const Shop = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
-  const [sortBy, setSortBy] = useState('name');
+  const [sortBy, setSortBy] = useState('newest');
+  const [priceRange, setPriceRange] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(12);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Initialize from URL params
+  useEffect(() => {
+    const category = searchParams.get('category') || '';
+    const search = searchParams.get('search') || '';
+    const sort = searchParams.get('sort') || 'newest';
+    const price = searchParams.get('priceRange') || '';
+    const page = parseInt(searchParams.get('page')) || 1;
+    
+    setSelectedCategory(category);
+    setSearchTerm(search);
+    setSortBy(sort);
+    setPriceRange(price);
+    setCurrentPage(page);
+  }, [searchParams]);
 
   useEffect(() => {
     fetchItems();
   }, [searchTerm, selectedCategory]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set('category', selectedCategory);
+    if (searchTerm) params.set('search', searchTerm);
+    if (sortBy !== 'newest') params.set('sort', sortBy);
+    if (priceRange) params.set('priceRange', priceRange);
+    if (currentPage > 1) params.set('page', currentPage.toString());
+    setSearchParams(params);
+  }, [selectedCategory, searchTerm, sortBy, priceRange, currentPage, setSearchParams]);
 
   const fetchItems = async () => {
     try {
@@ -43,7 +72,37 @@ const Shop = () => {
       if (selectedCategory) params.category = selectedCategory;
       
       const response = await frontendAPI.getCollections(params);
-      setItems(response.data.data);
+      let itemData = response.data.data || [];
+      
+      // Apply price filter
+      if (priceRange) {
+        const [min, max] = priceRange.split('-').map(Number);
+        itemData = itemData.filter(item => {
+          const price = item.price || 0;
+          if (max) {
+            return price >= min && price <= max;
+          }
+          return price >= min;
+        });
+      }
+      
+      // Sort data
+      itemData.sort((a, b) => {
+        switch (sortBy) {
+          case 'price-low':
+            return (a.price || 0) - (b.price || 0);
+          case 'price-high':
+            return (b.price || 0) - (a.price || 0);
+          case 'name':
+            return a.title.localeCompare(b.title);
+          case 'oldest':
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          default: // newest
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        }
+      });
+      
+      setItems(itemData);
       setCategories(response.data.categories || []);
     } catch (error) {
       console.error('Error fetching items:', error);
@@ -52,10 +111,18 @@ const Shop = () => {
     }
   };
 
-  const filteredItems = items.filter(item =>
-    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('');
+    setSortBy('newest');
+    setPriceRange('');
+    setCurrentPage(1);
+  };
+
+  // Pagination
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedItems = items.slice(startIndex, endIndex);
 
   if (loading) {
     return (
@@ -108,7 +175,7 @@ const Shop = () => {
           
           {/* Search and Filter Bar */}
           <div style={{ 
-            maxWidth: '600px', 
+            maxWidth: '800px', 
             margin: '0 auto',
             display: 'flex',
             gap: '15px',
@@ -127,23 +194,56 @@ const Shop = () => {
                 border: '2px solid #691B19',
                 fontFamily: 'Poppins, sans-serif',
                 flex: '1',
-                minWidth: '250px'
+                minWidth: '200px'
               }}
               size="large"
             />
             <Select
-              defaultValue="name"
+              placeholder="Price Range"
+              value={priceRange}
+              onChange={setPriceRange}
               style={{
                 width: '150px',
                 borderRadius: '25px'
               }}
               size="large"
-              onChange={setSortBy}
+              allowClear
             >
-              <Option value="name">Sort by Name</Option>
-              <Option value="category">Sort by Category</Option>
-              <Option value="popular">Most Popular</Option>
+              <Option value="0-500">₹0 - ₹500</Option>
+              <Option value="500-1000">₹500 - ₹1,000</Option>
+              <Option value="1000-2500">₹1,000 - ₹2,500</Option>
+              <Option value="2500-5000">₹2,500 - ₹5,000</Option>
+              <Option value="5000">₹5,000+</Option>
             </Select>
+            <Select
+              value={sortBy}
+              onChange={setSortBy}
+              style={{
+                width: '150px',
+                borderRadius: '25px'
+              }}
+              size="large"
+            >
+              <Option value="newest">Newest First</Option>
+              <Option value="oldest">Oldest First</Option>
+              <Option value="name">Name A-Z</Option>
+              <Option value="price-low">Price: Low to High</Option>
+              <Option value="price-high">Price: High to Low</Option>
+            </Select>
+            {(searchTerm || selectedCategory || sortBy !== 'newest' || priceRange) && (
+              <Button 
+                onClick={clearFilters}
+                style={{
+                  borderRadius: '25px',
+                  border: '2px solid #691B19',
+                  color: '#691B19',
+                  background: '#fff'
+                }}
+                size="large"
+              >
+                Clear
+              </Button>
+            )}
           </div>
         </div>
         <img
@@ -212,128 +312,70 @@ const Shop = () => {
               fontFamily: 'Bastoni',
               margin: 0
             }}>
-              All Products ({filteredItems.length})
+              All Products ({items.length})
             </h2>
           </div>
           
-          <Row gutter={[30, 30]} justify="center">
-            {filteredItems.map((item) => (
-              <Col xs={24} sm={12} md={8} lg={6} key={item._id}>
-                <Card
-                  hoverable
-                  onClick={() => navigate(`/collection/${item.slug}`)}
-                  cover={
-                    <div style={{ position: 'relative', overflow: 'visible' }}>
-                      <img
-                        src={item.image ? `${import.meta.env.VITE_API_BASE_URL}${item.image}` : '/src/assets/fp2.jpg'}
-                        onError={(e) => { e.target.src = '/src/assets/fp2.jpg'; }}
-                        alt={item.title}
-                        style={{ 
-                          width: '100%', 
-                          height: '220px', 
-                          objectFit: 'cover', 
-                          borderRadius: '20px 20px 0 0'
-                        }}
-                      />
-                      <Button
-                        type="primary"
-                        style={{
-                          position: 'absolute',
-                          bottom: '10px',
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          background: '#FFFFFF1A',
-                          border: '1px solid #828282',
-                          backdropFilter: 'blur(2px)',
-                          color: '#ffffff',
-                          fontWeight: '500',
-                          fontFamily: 'Poppins, sans-serif',
-                          borderRadius: '8px'
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          navigate(`/contact?service=${encodeURIComponent(item.title)}&type=collection`);
-                        }}
-                      >
-                        Order Now
-                      </Button>
-                    </div>
-                  }
-                  style={{
-                    borderRadius: '20px',
-                    border: 'none',
-                    boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
-                    height: '100%',
-                    overflow: 'visible',
-                    textAlign: 'center',
-                    fontFamily: 'Poppins, sans-serif',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ padding: '16px' }}>
-                    <h3 style={{
-                      fontFamily: 'Poppins, sans-serif',
-                      color: '#691B19',
-                      fontWeight: '600',
-                      fontSize: '16px',
-                      marginBottom: '8px'
-                    }}>
-                      {item.title}
-                    </h3>
-                    <p style={{
-                      color: '#828282',
-                      fontFamily: 'Poppins, sans-serif',
-                      fontSize: '14px',
-                      lineHeight: '1.6',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                      marginBottom: '12px'
-                    }}>
-                      {item.description}
-                    </p>
-                    {item.price && (
-                      <div style={{
-                        fontSize: '18px',
-                        fontWeight: '600',
-                        color: '#691B19',
-                        textAlign: 'center'
-                      }}>
-                        ₹{item.price}
-                      </div>
-                    )}
-                  </div>
-                </Card>
+          <Row gutter={[8, 12]} justify="center">
+            {paginatedItems.map((item) => (
+              <Col key={item._id} xs={12} sm={12} md={6} lg={6} xl={6}>
+                <div style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '0 4px' }}>
+                  <PoojaCard
+                    image={item.image ? `${import.meta.env.VITE_API_BASE_URL}${item.image}` : '/src/assets/fp2.jpg'}
+                    title={item.title}
+                    description={item.description}
+                    slug={item.slug}
+                    type="collection"
+                  />
+                </div>
               </Col>
             ))}
           </Row>
           
-          {filteredItems.length === 0 && (
+          {items.length === 0 && (
             <Empty
               image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
               imageStyle={{ height: 120 }}
               description={
                 <span style={{ fontFamily: 'Poppins, sans-serif', color: '#666', fontSize: '16px' }}>
-                  No items found. Try adjusting your search terms.
+                  {searchTerm || selectedCategory || priceRange ? 'No items found matching your criteria.' : 'No items available at the moment.'}
                 </span>
               }
               style={{ padding: '60px 20px' }}
             >
-              <Button 
-                type="primary" 
-                style={{
-                  background: '#691B19',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontFamily: 'Poppins, sans-serif'
-                }}
-                onClick={() => setSearchTerm('')}
-              >
-                Clear Search
-              </Button>
+              {(searchTerm || selectedCategory || priceRange) && (
+                <Button 
+                  type="primary" 
+                  style={{
+                    background: '#691B19',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontFamily: 'Poppins, sans-serif'
+                  }}
+                  onClick={clearFilters}
+                >
+                  Clear Filters
+                </Button>
+              )}
             </Empty>
+          )}
+          
+          {/* Pagination */}
+          {items.length > pageSize && (
+            <div style={{ textAlign: 'center', marginTop: '50px' }}>
+              <Pagination
+                current={currentPage}
+                total={items.length}
+                pageSize={pageSize}
+                onChange={setCurrentPage}
+                showSizeChanger={false}
+                showQuickJumper
+                showTotal={(total, range) => 
+                  `${range[0]}-${range[1]} of ${total} items`
+                }
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              />
+            </div>
           )}
         </div>
       </section>

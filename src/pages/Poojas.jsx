@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Row, Col, Empty } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
+import { Card, Button, Row, Col, Empty, Input, Select, Pagination } from 'antd';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { SearchOutlined } from '@ant-design/icons';
 import { frontendAPI } from '../utils/api';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import PoojaCard from '../components/common/PoojaCard';
 import featuredBG from '../assets/featuredBG.png';
 import bottomStrip from '../assets/bottom-strip.png';
-import ctaBG from '../assets/ctaBG.jpg';
 import image01 from '../assets/image01.png';
 
 // Add fonts
@@ -22,7 +22,9 @@ if (!document.querySelector('#poojas-fonts')) {
   document.head.appendChild(style);
 }
 
-const { Meta } = Card;
+
+
+const { Option } = Select;
 
 const Poojas = () => {
   const [poojas, setPoojas] = useState([]);
@@ -30,11 +32,38 @@ const Poojas = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
+  const [sortBy, setSortBy] = useState('newest');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(12);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Initialize from URL params
+  useEffect(() => {
+    const category = searchParams.get('category') || '';
+    const search = searchParams.get('search') || '';
+    const sort = searchParams.get('sort') || 'newest';
+    const page = parseInt(searchParams.get('page')) || 1;
+    
+    setSelectedCategory(category);
+    setSearchTerm(search);
+    setSortBy(sort);
+    setCurrentPage(page);
+  }, [searchParams]);
 
   useEffect(() => {
     fetchPoojas();
   }, [searchTerm, selectedCategory]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set('category', selectedCategory);
+    if (searchTerm) params.set('search', searchTerm);
+    if (sortBy !== 'newest') params.set('sort', sortBy);
+    if (currentPage > 1) params.set('page', currentPage.toString());
+    setSearchParams(params);
+  }, [selectedCategory, searchTerm, sortBy, currentPage, setSearchParams]);
 
   const fetchPoojas = async () => {
     try {
@@ -43,7 +72,21 @@ const Poojas = () => {
       if (selectedCategory) params.category = selectedCategory;
       
       const response = await frontendAPI.getPoojas(params);
-      setPoojas(response.data.data);
+      let poojaData = response.data.data || [];
+      
+      // Sort data
+      poojaData.sort((a, b) => {
+        switch (sortBy) {
+          case 'name':
+            return a.title.localeCompare(b.title);
+          case 'oldest':
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          default: // newest
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        }
+      });
+      
+      setPoojas(poojaData);
       setCategories(response.data.categories || []);
     } catch (error) {
       console.error('Error fetching poojas:', error);
@@ -52,18 +95,20 @@ const Poojas = () => {
     }
   };
 
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('');
+    setSortBy('newest');
+    setCurrentPage(1);
+  };
+
+  // Pagination
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedPoojas = poojas.slice(startIndex, endIndex);
+
   if (loading) {
-    return (
-      <div style={{ 
-        padding: '120px 20px', 
-        textAlign: 'center', 
-        fontFamily: 'Poppins, sans-serif',
-        fontSize: '18px',
-        color: '#6B1E1E'
-      }}>
-        Loading...
-      </div>
-    );
+    return <LoadingSpinner overlay={true} message="Loading poojas..." />;
   }
 
   return (
@@ -100,6 +145,61 @@ const Poojas = () => {
           }}>
             Experience divine blessings with our authentic pooja services performed by experienced pandits.
           </p>
+          
+          {/* Search and Filter Bar */}
+          <div style={{ 
+            maxWidth: '800px', 
+            margin: '0 auto',
+            display: 'flex',
+            gap: '15px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            marginBottom: '30px'
+          }}>
+            <Input
+              placeholder="Search poojas..."
+              prefix={<SearchOutlined style={{ color: '#691B19' }} />}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                borderRadius: '25px',
+                padding: '8px 20px',
+                background: '#fff',
+                border: '2px solid #691B19',
+                fontFamily: 'Poppins, sans-serif',
+                flex: '1',
+                minWidth: '250px'
+              }}
+              size="large"
+            />
+            <Select
+              value={sortBy}
+              onChange={setSortBy}
+              style={{
+                width: '150px',
+                borderRadius: '25px'
+              }}
+              size="large"
+            >
+              <Option value="newest">Newest First</Option>
+              <Option value="oldest">Oldest First</Option>
+              <Option value="name">Name A-Z</Option>
+            </Select>
+            {(searchTerm || selectedCategory || sortBy !== 'newest') && (
+              <Button 
+                onClick={clearFilters}
+                style={{
+                  borderRadius: '25px',
+                  border: '2px solid #691B19',
+                  color: '#691B19',
+                  background: '#fff'
+                }}
+                size="large"
+              >
+                Clear Filters
+              </Button>
+            )}
+          </div>
           
           {/* Decorative Image */}
           <img
@@ -162,99 +262,37 @@ const Poojas = () => {
             </div>
           </div>
 
-          <h2 style={{
-            fontSize: '32px',
-            fontWeight: '600',
-            color: '#6B1E1E',
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
             marginBottom: '40px',
-            fontFamily: 'Bastoni',
-            textAlign: 'center'
+            flexWrap: 'wrap',
+            gap: '20px'
           }}>
-            Available Poojas
-          </h2>
+            <h2 style={{
+              fontSize: '32px',
+              fontWeight: '600',
+              color: '#6B1E1E',
+              fontFamily: 'Bastoni',
+              margin: 0
+            }}>
+              Available Poojas ({poojas.length})
+            </h2>
+          </div>
           
-          <Row gutter={[30, 30]} justify="center">
-            {poojas.map((pooja) => (
-              <Col xs={24} sm={12} md={8} lg={6} key={pooja._id}>
-                <Card
-                  hoverable
-                  onClick={() => navigate(`/pooja/${pooja.slug}`)}
-                  cover={
-                    <div style={{ position: 'relative', overflow: 'visible' }}>
-                      <img
-                        src={pooja.image ? `${import.meta.env.VITE_API_BASE_URL}${pooja.image}` : '/src/assets/fp1.jpg'}
-                        onError={(e) => { e.target.src = '/src/assets/fp1.jpg'; }}
-                        alt={pooja.title}
-                        style={{ 
-                          width: '100%', 
-                          aspectRatio: '3/4', 
-                          objectFit: 'cover', 
-                          borderRadius: '15px 15px 0 0'
-                        }}
-                      />
-                      <Button
-                        type="primary"
-                        style={{
-                          position: 'absolute',
-                          bottom: '10px',
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          background: '#FFFFFF1A',
-                          border: '1px solid #828282',
-                          backdropFilter: 'blur(2px)',
-                          color: '#ffffff',
-                          fontWeight: '500',
-                          fontFamily: 'Poppins, sans-serif',
-                          borderRadius: '8px'
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          navigate(`/contact?service=${encodeURIComponent(pooja.title)}&type=pooja`);
-                        }}
-                      >
-                        Book Now
-                      </Button>
-                    </div>
-                  }
-                  style={{ 
-                    borderRadius: '15px', 
-                    overflow: 'visible', 
-                    textAlign: 'center',
-                    border: 'none',
-                    boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
-                    fontFamily: 'Poppins, sans-serif',
-                    minHeight: '400px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <Meta
-                    title={
-                      <span style={{ 
-                        fontFamily: 'Poppins, sans-serif', 
-                        color: '#691B19', 
-                        fontWeight: '600',
-                        fontSize: '16px'
-                      }}>
-                        {pooja.title}
-                      </span>
-                    }
-                    description={
-                      <span style={{ 
-                        color: '#828282', 
-                        fontFamily: 'Poppins, sans-serif',
-                        fontSize: '14px',
-                        lineHeight: '1.6',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden'
-                      }}>
-                        {pooja.description}
-                      </span>
-                    }
+          <Row gutter={[8, 12]} justify="center">
+            {paginatedPoojas.map((pooja) => (
+              <Col key={pooja._id} xs={12} sm={12} md={6} lg={6} xl={6}>
+                <div style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '0 4px' }}>
+                  <PoojaCard
+                    image={pooja.image ? `${import.meta.env.VITE_API_BASE_URL}${pooja.image}` : '/src/assets/fp1.jpg'}
+                    title={pooja.title}
+                    description={pooja.description}
+                    slug={pooja.slug}
+                    type="pooja"
                   />
-                </Card>
+                </div>
               </Col>
             ))}
           </Row>
@@ -264,11 +302,44 @@ const Poojas = () => {
               imageStyle={{ height: 120 }}
               description={
                 <span style={{ fontFamily: 'Poppins, sans-serif', color: '#666', fontSize: '16px' }}>
-                  No poojas available at the moment.
+                  {searchTerm || selectedCategory ? 'No poojas found matching your criteria.' : 'No poojas available at the moment.'}
                 </span>
               }
               style={{ padding: '60px 20px' }}
-            />
+            >
+              {(searchTerm || selectedCategory) && (
+                <Button 
+                  type="primary" 
+                  style={{
+                    background: '#691B19',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontFamily: 'Poppins, sans-serif'
+                  }}
+                  onClick={clearFilters}
+                >
+                  Clear Filters
+                </Button>
+              )}
+            </Empty>
+          )}
+          
+          {/* Pagination */}
+          {poojas.length > pageSize && (
+            <div style={{ textAlign: 'center', marginTop: '50px' }}>
+              <Pagination
+                current={currentPage}
+                total={poojas.length}
+                pageSize={pageSize}
+                onChange={setCurrentPage}
+                showSizeChanger={false}
+                showQuickJumper
+                showTotal={(total, range) => 
+                  `${range[0]}-${range[1]} of ${total} poojas`
+                }
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              />
+            </div>
           )}
         </div>
       </section>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-const PoojaCard = ({ image, title, description, id, type = 'pooja', onClick }) => {
+const PoojaCard = ({ image, title, description, id, slug, type = 'pooja', onClick }) => {
   const navigate = useNavigate();
   
   const handleCardClick = () => {
@@ -14,7 +14,8 @@ const PoojaCard = ({ image, title, description, id, type = 'pooja', onClick }) =
         service: 'service', 
         collection: 'collection'
       };
-      navigate(`/${routeMap[type] || type}/${id}`);
+      const identifier = slug || id;
+      navigate(`/${routeMap[type] || type}/${identifier}`);
     }
   };
   

@@ -1,0 +1,292 @@
+/* Navbar.css */
+.navbar-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  z-index: 1000;
+  padding: 0 30px;
+}
+
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+}
+
+.navbar-logo img {
+  height: 70px;
+  object-fit: contain;
+}
+
+.desktop-menu {
+  display: flex;
+  gap: 50px;
+  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+}
+
+.desktop-menu a {
+  color: #701a1a;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.desktop-menu a:hover {
+  color: #a02626;
+}
+
+.desktop-menu a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -5px;
+  left: 50%;
+  background-color: #701a1a;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.desktop-menu a:hover::after {
+  width: 100%;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+.desktop-icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+}
+
+.mobile-icons {
+  display: none;
+  gap: 15px;
+  align-items: center;
+}
+
+.search-container {
+  position: relative;
+}
+
+.search-icon {
+  font-size: 18px;
+  color: #701a1a;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.search-icon:hover {
+  color: #a02626;
+  transform: scale(1.1);
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  opacity: 1;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  margin-top: 10px;
+}
+
+.search-dropdown.closed {
+  width: 0px;
+  opacity: 0;
+}
+
+.user-auth-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.user-auth-link {
+  color: #701a1a;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.user-auth-link:hover {
+  color: #a02626;
+}
+
+.user-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #701a1a;
+  transition: all 0.3s ease;
+}
+
+.user-dropdown:hover {
+  color: #a02626;
+}
+
+/* Mobile Drawer Styles */
+.mobile-drawer-content {
+  padding: 20px;
+}
+
+.mobile-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.mobile-drawer-header img {
+  height: 40px;
+  object-fit: contain;
+}
+
+.mobile-drawer-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+}
+
+.mobile-drawer-menu a {
+  color: #701a1a;
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  padding: 10px 0;
+  border-bottom: 1px solid transparent;
+}
+
+.mobile-drawer-menu a:hover {
+  color: #a02626;
+  border-bottom-color: #eee;
+}
+
+.mobile-search-container {
+  margin-bottom: 20px;
+}
+
+.mobile-user-auth {
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .navbar-header {
+    padding: 0 20px;
+  }
+  
+  .desktop-menu {
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-header {
+    padding: 0 15px;
+  }
+  
+  .navbar-container {
+    height: 70px;
+  }
+  
+  .navbar-logo img {
+    height: 60px;
+  }
+  
+  .desktop-menu {
+    display: none;
+  }
+  
+  .desktop-icons {
+    display: none;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .mobile-icons {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-header {
+    padding: 0 10px;
+  }
+  
+  .navbar-container {
+    height: 60px;
+  }
+  
+  .navbar-logo img {
+    height: 50px;
+  }
+}
+
+/* Animation for search dropdown */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-dropdown {
+  animation: slideDown 0.3s ease;
+}
+
+/* Hover effects */
+.navbar-container .ant-btn:hover,
+.navbar-container .anticon:hover {
+  transform: translateY(-1px);
+}
+
+/* Focus states for accessibility */
+.desktop-menu a:focus,
+.user-auth-link:focus {
+  outline: 2px solid #701a1a;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Loading states */
+.navbar-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Active link styles */
+.desktop-menu a.active {
+  color: #a02626;
+  font-weight: 600;
+}
+
+.desktop-menu a.active::after {
+  width: 100%;
+}

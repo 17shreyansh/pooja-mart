@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Row, Col, Input, Button, Form, Card, message } from 'antd';
 import { frontendAPI } from '../utils/api';
 import { PhoneOutlined, MailOutlined, EnvironmentOutlined, ClockCircleOutlined, WhatsAppOutlined } from '@ant-design/icons';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 import featuredBG from '../assets/featuredBG.png';
 import bottomStrip from '../assets/bottom-strip.png';
 import image01 from '../assets/image01.png';
@@ -327,7 +328,7 @@ const Contact = () => {
                       }}
                       size="large"
                     >
-                      Send Message
+                      {loading ? 'Sending...' : 'Send Message'}
                     </Button>
                   </Form.Item>
                 </Form>
@@ -437,8 +438,8 @@ const Contact = () => {
                 <p style={{ color: '#666', fontSize: '14px', lineHeight: '1.6', margin: 0 }}>{faq.answer}</p>
               </div>
             )) : (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-                <p>Loading FAQs...</p>
+              <div style={{ textAlign: 'center', padding: '40px' }}>
+                <LoadingSpinner size="small" message="Loading FAQs..." />
               </div>
             )}
           </div>

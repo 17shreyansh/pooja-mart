@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Empty, Row, Col, Input } from 'antd';
+import { Card, Button, Empty, Row, Col, Input, Select, Pagination } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { frontendAPI } from '../utils/api';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import PoojaCard from '../components/common/PoojaCard';
 import featuredBG from '../assets/featuredBG.png';
 import bottomStrip from '../assets/bottom-strip.png';
 import ctaBG from '../assets/ctaBG.jpg';
@@ -22,7 +22,9 @@ if (!document.querySelector('#services-fonts')) {
   document.head.appendChild(style);
 }
 
-const { Meta } = Card;
+
+
+const { Option } = Select;
 
 const Services = () => {
   const [services, setServices] = useState([]);
@@ -30,11 +32,42 @@ const Services = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
+  const [sortBy, setSortBy] = useState('newest');
+  const [priceRange, setPriceRange] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(12);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Initialize from URL params
+  useEffect(() => {
+    const category = searchParams.get('category') || '';
+    const search = searchParams.get('search') || '';
+    const sort = searchParams.get('sort') || 'newest';
+    const price = searchParams.get('priceRange') || '';
+    const page = parseInt(searchParams.get('page')) || 1;
+    
+    setSelectedCategory(category);
+    setSearchTerm(search);
+    setSortBy(sort);
+    setPriceRange(price);
+    setCurrentPage(page);
+  }, [searchParams]);
 
   useEffect(() => {
     fetchServices();
   }, [searchTerm, selectedCategory]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set('category', selectedCategory);
+    if (searchTerm) params.set('search', searchTerm);
+    if (sortBy !== 'newest') params.set('sort', sortBy);
+    if (priceRange) params.set('priceRange', priceRange);
+    if (currentPage > 1) params.set('page', currentPage.toString());
+    setSearchParams(params);
+  }, [selectedCategory, searchTerm, sortBy, priceRange, currentPage, setSearchParams]);
 
   const fetchServices = async () => {
     try {
@@ -43,7 +76,37 @@ const Services = () => {
       if (selectedCategory) params.category = selectedCategory;
       
       const response = await frontendAPI.getServices(params);
-      setServices(response.data.data);
+      let serviceData = response.data.data || [];
+      
+      // Apply price filter
+      if (priceRange) {
+        const [min, max] = priceRange.split('-').map(Number);
+        serviceData = serviceData.filter(service => {
+          const price = service.price || 0;
+          if (max) {
+            return price >= min && price <= max;
+          }
+          return price >= min;
+        });
+      }
+      
+      // Sort data
+      serviceData.sort((a, b) => {
+        switch (sortBy) {
+          case 'price-low':
+            return (a.price || 0) - (b.price || 0);
+          case 'price-high':
+            return (b.price || 0) - (a.price || 0);
+          case 'name':
+            return a.title.localeCompare(b.title);
+          case 'oldest':
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          default: // newest
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        }
+      });
+      
+      setServices(serviceData);
       setCategories(response.data.categories || []);
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -52,18 +115,21 @@ const Services = () => {
     }
   };
 
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategory('');
+    setSortBy('newest');
+    setPriceRange('');
+    setCurrentPage(1);
+  };
+
+  // Pagination
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedServices = services.slice(startIndex, endIndex);
+
   if (loading) {
-    return (
-      <div style={{ 
-        padding: '120px 20px', 
-        textAlign: 'center', 
-        fontFamily: 'Poppins, sans-serif',
-        fontSize: '18px',
-        color: '#6B1E1E'
-      }}>
-        Loading...
-      </div>
-    );
+    return <LoadingSpinner overlay={true} message="Loading services..." />;
   }
 
   return (
@@ -102,7 +168,7 @@ const Services = () => {
           </p>
           
           <div style={{ 
-            maxWidth: '600px', 
+            maxWidth: '800px', 
             margin: '0 auto',
             display: 'flex',
             gap: '15px',
@@ -121,10 +187,56 @@ const Services = () => {
                 border: '2px solid #691B19',
                 fontFamily: 'Poppins, sans-serif',
                 flex: '1',
-                minWidth: '250px'
+                minWidth: '200px'
               }}
               size="large"
             />
+            <Select
+              placeholder="Price Range"
+              value={priceRange}
+              onChange={setPriceRange}
+              style={{
+                width: '150px',
+                borderRadius: '25px'
+              }}
+              size="large"
+              allowClear
+            >
+              <Option value="0-500">₹0 - ₹500</Option>
+              <Option value="500-1000">₹500 - ₹1,000</Option>
+              <Option value="1000-2500">₹1,000 - ₹2,500</Option>
+              <Option value="2500-5000">₹2,500 - ₹5,000</Option>
+              <Option value="5000">₹5,000+</Option>
+            </Select>
+            <Select
+              value={sortBy}
+              onChange={setSortBy}
+              style={{
+                width: '150px',
+                borderRadius: '25px'
+              }}
+              size="large"
+            >
+              <Option value="newest">Newest First</Option>
+              <Option value="oldest">Oldest First</Option>
+              <Option value="name">Name A-Z</Option>
+              <Option value="price-low">Price: Low to High</Option>
+              <Option value="price-high">Price: High to Low</Option>
+            </Select>
+            {(searchTerm || selectedCategory || sortBy !== 'newest' || priceRange) && (
+              <Button 
+                onClick={clearFilters}
+                style={{
+                  borderRadius: '25px',
+                  border: '2px solid #691B19',
+                  color: '#691B19',
+                  background: '#fff'
+                }}
+                size="large"
+              >
+                Clear
+              </Button>
+            )}
           </div>
         </div>
         <img
@@ -178,102 +290,85 @@ const Services = () => {
         fontFamily: 'Poppins, sans-serif'
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <Row gutter={[24, 24]} justify="start">
-            {services.map((service) => (
-              <Col xs={24} sm={12} md={8} lg={6} key={service._id}>
-                <Card
-                  hoverable
-                  onClick={() => navigate(`/service/${service.slug}`)}
-                  cover={
-                    <div style={{ position: 'relative', overflow: 'visible' }}>
-                      <img
-                        src={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : '/src/assets/ser1.jpg'}
-                        onError={(e) => { e.target.src = '/src/assets/ser1.jpg'; }}
-                        alt={service.title}
-                        style={{ 
-                          width: '100%', 
-                          height: '220px', 
-                          objectFit: 'cover', 
-                          borderRadius: '20px 20px 0 0'
-                        }}
-                      />
-                      <Button
-                        type="primary"
-                        style={{
-                          position: 'absolute',
-                          bottom: '10px',
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          background: '#FFFFFF1A',
-                          border: '1px solid #828282',
-                          backdropFilter: 'blur(2px)',
-                          color: '#ffffff',
-                          fontWeight: '500',
-                          fontFamily: 'Poppins, sans-serif',
-                          borderRadius: '8px'
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          navigate(`/contact?service=${encodeURIComponent(service.title)}&type=service`);
-                        }}
-                      >
-                        Book Now
-                      </Button>
-                    </div>
-                  }
-                  style={{ 
-                    borderRadius: '20px', 
-                    overflow: 'visible', 
-                    textAlign: 'center',
-                    border: 'none',
-                    boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
-                    fontFamily: 'Poppins, sans-serif',
-                    height: '100%',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <Meta
-                    title={
-                      <span style={{ 
-                        fontFamily: 'Poppins, sans-serif', 
-                        color: '#691B19', 
-                        fontWeight: '600',
-                        fontSize: '18px'
-                      }}>
-                        {service.title}
-                      </span>
-                    }
-                    description={
-                      <span style={{ 
-                        color: '#828282', 
-                        fontFamily: 'Poppins, sans-serif',
-                        fontSize: '14px',
-                        lineHeight: '1.6',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden'
-                      }}>
-                        {service.description}
-                      </span>
-                    }
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '40px',
+            flexWrap: 'wrap',
+            gap: '20px'
+          }}>
+            <h2 style={{
+              fontSize: '28px',
+              fontWeight: '600',
+              color: '#6B1E1E',
+              fontFamily: 'Bastoni',
+              margin: 0
+            }}>
+              Our Services ({services.length})
+            </h2>
+          </div>
+          
+          <Row gutter={[8, 12]} justify="center">
+            {paginatedServices.map((service) => (
+              <Col key={service._id} xs={12} sm={12} md={6} lg={6} xl={6}>
+                <div style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '0 4px' }}>
+                  <PoojaCard
+                    image={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : '/src/assets/ser1.jpg'}
+                    title={service.title}
+                    description={service.description}
+                    slug={service.slug}
+                    type="service"
                   />
-                </Card>
+                </div>
               </Col>
             ))}
           </Row>
+          
           {services.length === 0 && (
             <Empty
               image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
               imageStyle={{ height: 120 }}
               description={
                 <span style={{ fontFamily: 'Poppins, sans-serif', color: '#666', fontSize: '16px' }}>
-                  No services available at the moment.
+                  {searchTerm || selectedCategory || priceRange ? 'No services found matching your criteria.' : 'No services available at the moment.'}
                 </span>
               }
               style={{ padding: '60px 20px' }}
-            />
+            >
+              {(searchTerm || selectedCategory || priceRange) && (
+                <Button 
+                  type="primary" 
+                  style={{
+                    background: '#691B19',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontFamily: 'Poppins, sans-serif'
+                  }}
+                  onClick={clearFilters}
+                >
+                  Clear Filters
+                </Button>
+              )}
+            </Empty>
+          )}
+          
+          {/* Pagination */}
+          {services.length > pageSize && (
+            <div style={{ textAlign: 'center', marginTop: '50px' }}>
+              <Pagination
+                current={currentPage}
+                total={services.length}
+                pageSize={pageSize}
+                onChange={setCurrentPage}
+                showSizeChanger={false}
+                showQuickJumper
+                showTotal={(total, range) => 
+                  `${range[0]}-${range[1]} of ${total} services`
+                }
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              />
+            </div>
           )}
         </div>
       </section>

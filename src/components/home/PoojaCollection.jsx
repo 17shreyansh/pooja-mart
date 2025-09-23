@@ -68,7 +68,7 @@ const PoojaCollection = () => {
                   image={pooja.image ? `${import.meta.env.VITE_API_BASE_URL}${pooja.image}` : '/src/assets/fp2.jpg'}
                   title={pooja.title}
                   description={pooja.description}
-                  id={pooja._id}
+                  slug={pooja.slug}
                   type="collection"
                 />
               </div>

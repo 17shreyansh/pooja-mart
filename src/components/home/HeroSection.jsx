@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Row, Col, Input, Button, Form } from "antd";
 import { useNavigate } from 'react-router-dom';
 import { homePageAPI } from '../../utils/homePageApi';
+import LoadingSpinner from '../common/LoadingSpinner';
 import heroImage from "../../assets/hero-bg.jpg";
 import banner from "../../assets/hero-1.png";
 import "./HeroSection.css";
@@ -9,6 +10,7 @@ import "./HeroSection.css";
 const HeroSection = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState({
     title: 'Pooja Samagri, Prasad & Pandit Ji – All at One Place',
     description: 'Complete Devotional Service at Your Doorstep – For Peace, Happiness & Prosperity',
@@ -35,9 +37,15 @@ const HeroSection = () => {
     }
   };
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
+    setIsLoading(true);
+    
+    // Simulate form processing
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
     if (!values.city && !values.poojaName) {
       navigate('/contact');
+      setIsLoading(false);
       return;
     }
     
@@ -47,6 +55,7 @@ const HeroSection = () => {
     params.append('type', 'hero-form');
     
     navigate(`/contact?${params.toString()}`);
+    setIsLoading(false);
   };
 
   return (
@@ -100,8 +109,9 @@ const HeroSection = () => {
                   size="large"
                   className="hero-button"
                   htmlType="submit"
+                  loading={isLoading}
                 >
-                  Book a Pooja
+                  {isLoading ? 'Processing...' : 'Book a Pooja'}
                 </Button>
               </Form.Item>
             </Form>
