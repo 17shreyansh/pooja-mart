@@ -5,7 +5,6 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import Services from './pages/Services';
-import ServiceDetail from './pages/ServiceDetail';
 import Poojas from './pages/Poojas';
 import PoojaDetail from './pages/PoojaDetail';
 import Shop from './pages/Shop';
@@ -49,7 +48,6 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/services" element={<Services />} />
-                <Route path="/service/:slug" element={<ServiceDetail />} />
                 <Route path="/poojas" element={<Poojas />} />
                 <Route path="/pooja/:slug" element={<PoojaDetail />} />
                 <Route path="/shop" element={<Shop />} />

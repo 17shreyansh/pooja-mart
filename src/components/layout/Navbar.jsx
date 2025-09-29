@@ -3,6 +3,8 @@ import { Menu, Dropdown, Button, Drawer, Input, AutoComplete } from "antd";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { DownOutlined, MenuOutlined, CloseOutlined, SearchOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import { frontendAPI } from '../../utils/api';
+import CitySelector from '../home/CitySelector';
+import LanguageSelector from '../common/LanguageSelector';
 import logo from "../../assets/logo.png";
 import '../../styles/Navbar.css';
 
@@ -44,7 +46,7 @@ const UserAuth = () => {
     );
 
     return (
-      <Dropdown menu={userMenu} trigger={['hover']}>
+      <Dropdown overlay={userMenu} trigger={['hover']}>
         <div className="user-dropdown">
           <UserOutlined style={{ fontSize: '16px' }} />
           <span>{user.name}</span>
@@ -72,12 +74,18 @@ const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [categories, setCategories] = useState({});
+  const [services, setServices] = useState([]);
+  const [selectedCity, setSelectedCity] = useState(null);
   const searchRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
-    fetchCategories();
+    fetchServices();
+    // Load saved city from localStorage
+    const savedCity = localStorage.getItem('selectedCity');
+    if (savedCity) {
+      setSelectedCity(JSON.parse(savedCity));
+    }
   }, []);
 
   useEffect(() => {
@@ -91,19 +99,12 @@ const Navbar = () => {
     }
   }, [searchValue]);
 
-  const fetchCategories = async () => {
+  const fetchServices = async () => {
     try {
-      // Get all categories from the dedicated endpoint
-      const response = await frontendAPI.getCategories();
-      const allCategories = response.data || [];
-      
-      setCategories({
-        poojas: allCategories.map(cat => cat.name),
-        services: allCategories.map(cat => cat.name),
-        products: allCategories.map(cat => cat.name)
-      });
+      const response = await frontendAPI.getServices();
+      setServices(response.data.data || []);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error('Error fetching services:', error);
     }
   };
 
@@ -153,6 +154,13 @@ const Navbar = () => {
       .trim('-');
   };
 
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    localStorage.setItem('selectedCity', JSON.stringify(city));
+    // Trigger storage event for other components
+    window.dispatchEvent(new Event('storage'));
+  };
+
   return (
     <header className="navbar-header">
       <div className="navbar-container">
@@ -171,9 +179,32 @@ const Navbar = () => {
           <Link to="/poojas" className={location.pathname === '/poojas' ? 'active' : ''}>
             Book a Pooja
           </Link>
-          <Link to="/services" className={location.pathname === '/services' ? 'active' : ''}>
-            Services
-          </Link>
+          <Dropdown
+            menu={{
+              items: services.map(service => ({
+                key: service._id,
+                label: (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 0' }}>
+                    <img 
+                      src={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : '/placeholder.jpg'}
+                      alt={service.name}
+                      style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover' }}
+                    />
+                    <div>
+                      <div style={{ fontWeight: '500', color: '#691B19' }}>{service.name}</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>{service.description?.substring(0, 50)}...</div>
+                    </div>
+                  </div>
+                ),
+                onClick: () => navigate(`/poojas?service=${service._id}`)
+              }))
+            }}
+            trigger={['hover']}
+          >
+            <Link to="#" className={location.pathname === '/services' ? 'active' : ''}>
+              Services <DownOutlined style={{ fontSize: '10px' }} />
+            </Link>
+          </Dropdown>
           <Link to="/shop" className={location.pathname === '/shop' ? 'active' : ''}>
             Shop
           </Link>
@@ -192,6 +223,12 @@ const Navbar = () => {
 
         {/* Desktop Right Icons */}
         <div className="desktop-icons">
+          <LanguageSelector />
+          <CitySelector 
+            selectedCity={selectedCity} 
+            onCityChange={handleCityChange} 
+          />
+          
           <div className="search-container">
             <SearchOutlined 
               className="search-icon"
@@ -254,6 +291,17 @@ const Navbar = () => {
               Home
             </Link>
             
+            <div style={{ padding: '12px 0', borderBottom: '1px solid #eee' }}>
+              <LanguageSelector />
+            </div>
+            
+            <div style={{ padding: '12px 0', borderBottom: '1px solid #eee' }}>
+              <CitySelector 
+                selectedCity={selectedCity} 
+                onCityChange={handleCityChange} 
+              />
+            </div>
+            
             <div className="mobile-search-container">
               <AutoComplete
                 value={searchValue}
@@ -270,9 +318,29 @@ const Navbar = () => {
               Book a Pooja
             </Link>
             
-            <Link to="/services" onClick={() => setMobileMenuOpen(false)}>
-              Services
-            </Link>
+            <div className="mobile-services-menu">
+              <div style={{ fontWeight: '500', padding: '12px 0', borderBottom: '1px solid #eee' }}>Services</div>
+              {services.map(service => (
+                <div 
+                  key={service._id}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 0', cursor: 'pointer' }}
+                  onClick={() => {
+                    navigate(`/poojas?service=${service._id}`);
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <img 
+                    src={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : '/placeholder.jpg'}
+                    alt={service.name}
+                    style={{ width: '30px', height: '30px', borderRadius: '6px', objectFit: 'cover' }}
+                  />
+                  <div>
+                    <div style={{ fontWeight: '500', color: '#691B19', fontSize: '14px' }}>{service.name}</div>
+                    <div style={{ fontSize: '11px', color: '#666' }}>{service.description?.substring(0, 40)}...</div>
+                  </div>
+                </div>
+              ))}
+            </div>
             
             <Link to="/shop" onClick={() => setMobileMenuOpen(false)}>
               Shop

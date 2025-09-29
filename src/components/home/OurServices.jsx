@@ -66,12 +66,12 @@ const OurServices = () => {
             <SwiperSlide key={index}>
               <Card
                 hoverable
-                onClick={() => navigate(`/service/${service.slug || service._id}`)}
+                onClick={() => navigate(`/poojas?service=${service._id}`)}
                 cover={
                   <div style={{ position: 'relative', overflow: 'visible' }}>
                     <img
                       src={service.image ? `${import.meta.env.VITE_API_BASE_URL}${service.image}` : '/src/assets/ser1.jpg'}
-                      alt={service.title}
+                      alt={service.name}
                       style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '20px' }}
                       onError={(e) => { e.target.src = '/src/assets/ser1.jpg'; }}
                     />
@@ -96,14 +96,14 @@ const OurServices = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          navigate(`/contact?service=${encodeURIComponent(service.title)}&type=service`);
+                          navigate(`/contact?service=${encodeURIComponent(service.name)}&type=service`);
                         }}
                       >
                         Book Now
                       </Button>
                       <WhatsAppButton
                         whatsappNumber={whatsappNumber}
-                        message={`Hi, I'm interested in ${service.title} service. Please provide more details.`}
+                        message={`Hi, I'm interested in ${service.name} service. Please provide more details.`}
                         size="small"
                         style={{
                           background: '#25D366AA',
@@ -124,8 +124,8 @@ const OurServices = () => {
                 }}
               >
                 <Meta
-                  title={<span style={{ fontFamily: 'Poppins, sans-serif', color: '#691B19', fontWeight: '400' }}>{service.title}</span>}
-                  description={<span style={{ color: '#828282', fontFamily: 'Poppins, sans-serif' }}>{service.subtitle}</span>}
+                  title={<span style={{ fontFamily: 'Poppins, sans-serif', color: '#691B19', fontWeight: '400' }}>{service.name}</span>}
+                  description={<span style={{ color: '#828282', fontFamily: 'Poppins, sans-serif' }}>{service.description?.substring(0, 50)}...</span>}
                 />
               </Card>
             </SwiperSlide>

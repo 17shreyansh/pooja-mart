@@ -10,8 +10,7 @@ const Services = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [filters, setFilters] = useState({ search: '', category: '' });
+  const [filters, setFilters] = useState({ search: '' });
 
   useEffect(() => {
     fetchServices();
@@ -22,7 +21,6 @@ const Services = () => {
     try {
       const response = await servicesAPI.getAllAdmin(filters);
       setServices(response.data.data);
-      setCategories(response.data.categories || []);
     } catch (error) {
       message.error('Failed to fetch services');
     }
@@ -42,24 +40,12 @@ const Services = () => {
   };
 
   const columns = [
-    { title: 'Title', dataIndex: 'title', key: 'title' },
+    { title: 'Name', dataIndex: 'name', key: 'name' },
     { 
       title: 'Description', 
       dataIndex: 'description', 
       key: 'description',
       render: (text) => text ? text.substring(0, 50) + '...' : 'No description'
-    },
-    { 
-      title: 'Category', 
-      dataIndex: 'category', 
-      key: 'category',
-      render: (category) => category?.name || 'No category'
-    },
-    { 
-      title: 'Price', 
-      dataIndex: 'price', 
-      key: 'price',
-      render: (price) => price ? `₹${price}` : 'N/A'
     },
 
     { 
@@ -90,31 +76,18 @@ const Services = () => {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Card title="Services Management" extra={
+      <Card title="Service Categories Management" extra={
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/admin/services/new')}>
-          Add Service
+          Add Service Category
         </Button>
       }>
-        <div style={{ marginBottom: 16, display: 'flex', gap: 16 }}>
+        <div style={{ marginBottom: 16 }}>
           <Input.Search
-            placeholder="Search services..."
+            placeholder="Search service categories..."
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             style={{ width: 300 }}
           />
-          <Select
-            placeholder="Filter by category"
-            value={filters.category}
-            onChange={(value) => setFilters({ ...filters, category: value })}
-            style={{ width: 200 }}
-            allowClear
-          >
-            {categories.map(cat => (
-              <Select.Option key={cat._id || cat} value={cat._id || cat}>
-                {cat.name || cat}
-              </Select.Option>
-            ))}
-          </Select>
         </div>
         
         <Table columns={columns} dataSource={services} loading={loading} rowKey="_id" />

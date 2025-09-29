@@ -18,7 +18,7 @@ const PoojaCollection = () => {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const response = await poojaCollectionAPI.getAll();
+      const response = await poojaCollectionAPI.getAllAdmin();
       setItems(response.data.data);
     } catch (error) {
       message.error('Failed to fetch items');

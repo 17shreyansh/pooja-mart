@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Row, Col, Empty, Input, Select, Pagination } from 'antd';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { SearchOutlined } from '@ant-design/icons';
-import { frontendAPI } from '../utils/api';
+import { SearchOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { frontendAPI, citiesAPI } from '../utils/api';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import PoojaCard from '../components/common/PoojaCard';
 import featuredBG from '../assets/featuredBG.png';
@@ -30,9 +30,12 @@ const Poojas = () => {
   const [poojas, setPoojas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [categories, setCategories] = useState([]);
+  const [selectedService, setSelectedService] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [services, setServices] = useState([]);
+  const [cities, setCities] = useState([]);
   const [sortBy, setSortBy] = useState('newest');
+  const [priceRange, setPriceRange] = useState([0, 10000]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(12);
   const navigate = useNavigate();
@@ -40,45 +43,81 @@ const Poojas = () => {
 
   // Initialize from URL params
   useEffect(() => {
-    const category = searchParams.get('category') || '';
+    const service = searchParams.get('service') || '';
     const search = searchParams.get('search') || '';
+    const city = searchParams.get('city') || '';
     const sort = searchParams.get('sort') || 'newest';
+    const minPrice = parseInt(searchParams.get('minPrice')) || 0;
+    const maxPrice = parseInt(searchParams.get('maxPrice')) || 10000;
     const page = parseInt(searchParams.get('page')) || 1;
     
-    setSelectedCategory(category);
+    setSelectedService(service);
     setSearchTerm(search);
+    setSelectedCity(city);
     setSortBy(sort);
+    setPriceRange([minPrice, maxPrice]);
     setCurrentPage(page);
+    
+    // Load cities
+    fetchCities();
   }, [searchParams]);
 
   useEffect(() => {
     fetchPoojas();
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedService, selectedCity]);
 
   // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams();
-    if (selectedCategory) params.set('category', selectedCategory);
+    if (selectedService) params.set('service', selectedService);
     if (searchTerm) params.set('search', searchTerm);
+    if (selectedCity) params.set('city', selectedCity);
     if (sortBy !== 'newest') params.set('sort', sortBy);
+    if (priceRange[0] > 0) params.set('minPrice', priceRange[0].toString());
+    if (priceRange[1] < 10000) params.set('maxPrice', priceRange[1].toString());
     if (currentPage > 1) params.set('page', currentPage.toString());
     setSearchParams(params);
-  }, [selectedCategory, searchTerm, sortBy, currentPage, setSearchParams]);
+  }, [selectedService, searchTerm, selectedCity, sortBy, priceRange, currentPage, setSearchParams]);
+
+  const fetchCities = async () => {
+    try {
+      const response = await citiesAPI.getAll();
+      setCities(response.data.data);
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+    }
+  };
 
   const fetchPoojas = async () => {
     try {
       const params = {};
       if (searchTerm) params.search = searchTerm;
-      if (selectedCategory) params.category = selectedCategory;
+      if (selectedService) params.service = selectedService;
+      if (selectedCity) params.city = selectedCity;
       
       const response = await frontendAPI.getPoojas(params);
       let poojaData = response.data.data || [];
+      
+      // Filter by price range
+      poojaData = poojaData.filter(pooja => {
+        if (!pooja.packages || pooja.packages.length === 0) return true;
+        const minPackagePrice = Math.min(...pooja.packages.map(pkg => pkg.price || 0));
+        return minPackagePrice >= priceRange[0] && minPackagePrice <= priceRange[1];
+      });
       
       // Sort data
       poojaData.sort((a, b) => {
         switch (sortBy) {
           case 'name':
             return a.title.localeCompare(b.title);
+          case 'price-low':
+            const aMinPrice = a.packages?.length ? Math.min(...a.packages.map(pkg => pkg.price || 0)) : 0;
+            const bMinPrice = b.packages?.length ? Math.min(...b.packages.map(pkg => pkg.price || 0)) : 0;
+            return aMinPrice - bMinPrice;
+          case 'price-high':
+            const aMaxPrice = a.packages?.length ? Math.max(...a.packages.map(pkg => pkg.price || 0)) : 0;
+            const bMaxPrice = b.packages?.length ? Math.max(...b.packages.map(pkg => pkg.price || 0)) : 0;
+            return bMaxPrice - aMaxPrice;
           case 'oldest':
             return new Date(a.createdAt) - new Date(b.createdAt);
           default: // newest
@@ -87,7 +126,7 @@ const Poojas = () => {
       });
       
       setPoojas(poojaData);
-      setCategories(response.data.categories || []);
+      setServices(response.data.services || []);
     } catch (error) {
       console.error('Error fetching poojas:', error);
     } finally {
@@ -97,8 +136,10 @@ const Poojas = () => {
 
   const clearFilters = () => {
     setSearchTerm('');
-    setSelectedCategory('');
+    setSelectedService('');
+    setSelectedCity('');
     setSortBy('newest');
+    setPriceRange([0, 10000]);
     setCurrentPage(1);
   };
 
@@ -173,10 +214,27 @@ const Poojas = () => {
               size="large"
             />
             <Select
+              value={selectedCity}
+              onChange={setSelectedCity}
+              placeholder="Select City"
+              style={{
+                width: '150px',
+                borderRadius: '25px'
+              }}
+              size="large"
+              allowClear
+            >
+              {cities.map(city => (
+                <Option key={city._id} value={city._id}>
+                  {city.name}
+                </Option>
+              ))}
+            </Select>
+            <Select
               value={sortBy}
               onChange={setSortBy}
               style={{
-                width: '150px',
+                width: '180px',
                 borderRadius: '25px'
               }}
               size="large"
@@ -184,8 +242,10 @@ const Poojas = () => {
               <Option value="newest">Newest First</Option>
               <Option value="oldest">Oldest First</Option>
               <Option value="name">Name A-Z</Option>
+              <Option value="price-low">Price: Low to High</Option>
+              <Option value="price-high">Price: High to Low</Option>
             </Select>
-            {(searchTerm || selectedCategory || sortBy !== 'newest') && (
+            {(searchTerm || selectedService || selectedCity || sortBy !== 'newest' || priceRange[0] > 0 || priceRange[1] < 10000) && (
               <Button 
                 onClick={clearFilters}
                 style={{
@@ -227,36 +287,37 @@ const Poojas = () => {
         fontFamily: 'Poppins, sans-serif'
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Categories Section */}
+          {/* Service Categories Section */}
           <div style={{ marginBottom: '40px', textAlign: 'center' }}>
             <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Button 
-                onClick={() => setSelectedCategory('')}
+                key="all-poojas"
+                onClick={() => setSelectedService('')}
                 style={{
                   padding: '8px 20px',
                   borderRadius: '20px',
                   border: '1px solid #691B19',
-                  background: selectedCategory === '' ? '#691B19' : 'white',
-                  color: selectedCategory === '' ? 'white' : '#691B19',
+                  background: selectedService === '' ? '#691B19' : 'white',
+                  color: selectedService === '' ? 'white' : '#691B19',
                   fontSize: '14px'
                 }}
               >
                 All Poojas
               </Button>
-              {categories.map((category) => (
+              {services.map((service, index) => (
                 <Button 
-                  key={category._id || category} 
-                  onClick={() => setSelectedCategory(category._id || category)}
+                  key={service._id || `service-${index}`} 
+                  onClick={() => setSelectedService(service._id || service)}
                   style={{
                     padding: '8px 20px',
                     borderRadius: '20px',
                     border: '1px solid #691B19',
-                    background: selectedCategory === (category._id || category) ? '#691B19' : 'white',
-                    color: selectedCategory === (category._id || category) ? 'white' : '#691B19',
+                    background: selectedService === (service._id || service) ? '#691B19' : 'white',
+                    color: selectedService === (service._id || service) ? 'white' : '#691B19',
                     fontSize: '14px'
                   }}
                 >
-                  {category.name || category}
+                  {typeof service === 'object' ? service.name : service}
                 </Button>
               ))}
             </div>
@@ -302,12 +363,12 @@ const Poojas = () => {
               imageStyle={{ height: 120 }}
               description={
                 <span style={{ fontFamily: 'Poppins, sans-serif', color: '#666', fontSize: '16px' }}>
-                  {searchTerm || selectedCategory ? 'No poojas found matching your criteria.' : 'No poojas available at the moment.'}
+                  {searchTerm || selectedService || selectedCity || priceRange[0] > 0 || priceRange[1] < 10000 ? 'No poojas found matching your criteria.' : 'No poojas available at the moment.'}
                 </span>
               }
               style={{ padding: '60px 20px' }}
             >
-              {(searchTerm || selectedCategory) && (
+              {(searchTerm || selectedService || selectedCity || priceRange[0] > 0 || priceRange[1] < 10000) && (
                 <Button 
                   type="primary" 
                   style={{

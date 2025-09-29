@@ -32,6 +32,7 @@ export const servicesAPI = {
 export const poojasAPI = {
   getAll: (params) => api.get('/poojas', { params }),
   getAllAdmin: (params) => api.get('/poojas/admin', { params }),
+  getById: (id) => api.get(`/poojas/${id}`),
   create: (data) => api.post('/poojas', data),
   update: (id, data) => api.put(`/poojas/${id}`, data),
   delete: (id) => api.delete(`/poojas/${id}`),
@@ -118,6 +119,14 @@ export const offersAPI = {
   create: (data) => api.post('/offers', data),
   update: (id, data) => api.put(`/offers/${id}`, data),
   delete: (id) => api.delete(`/offers/${id}`),
+};
+
+export const citiesAPI = {
+  getAll: () => api.get('/cities'),
+  getAllAdmin: () => api.get('/cities/admin'),
+  create: (data) => api.post('/cities/admin', data),
+  update: (id, data) => api.put(`/cities/admin/${id}`, data),
+  delete: (id) => api.delete(`/cities/admin/${id}`),
 };
 
 export const adminAPI = api;

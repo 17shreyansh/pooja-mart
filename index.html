@@ -4,10 +4,30 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>Puja Mart - Book Pooja Services Online</title>
+    <style>
+      .goog-te-banner-frame { display: none !important; }
+      body { top: 0px !important; }
+      .goog-te-gadget { display: none !important; }
+      .goog-te-combo { display: none !important; }
+      .skiptranslate { display: none !important; }
+      .goog-te-spinner { display: none !important; }
+      .goog-te-spinner-pos { display: none !important; }
+      .goog-te-loading { display: none !important; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'en,hi,bn,te,mr,ta,gu'
+        }, 'google_translate_element');
+      }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

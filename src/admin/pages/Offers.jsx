@@ -20,7 +20,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant
 import { offersAPI } from '../utils/api';
 
 const { TextArea } = Input;
-const { Option } = Select;
+
 
 const Offers = () => {
   const [offers, setOffers] = useState([]);
@@ -251,11 +251,14 @@ const Offers = () => {
             label="Offer Type"
             rules={[{ required: true, message: 'Please select offer type' }]}
           >
-            <Select placeholder="Select offer type">
-              <Option value="pooja">Pooja</Option>
-              <Option value="service">Service</Option>
-              <Option value="collection">Collection</Option>
-            </Select>
+            <Select 
+              placeholder="Select offer type"
+              options={[
+                { value: 'pooja', label: 'Pooja' },
+                { value: 'service', label: 'Service' },
+                { value: 'collection', label: 'Collection' }
+              ]}
+            />
           </Form.Item>
 
           <Form.Item

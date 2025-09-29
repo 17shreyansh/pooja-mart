@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Upload, Card, Row, Col, Switch, InputNumber, Space, App, Select } from 'antd';
+import { Form, Input, Button, Upload, Card, Row, Col, Switch, Space, App } from 'antd';
 import { UploadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
-import { servicesAPI, adminAPI } from '../utils/api';
+import { servicesAPI } from '../utils/api';
 
 const ServiceEditor = () => {
   const { message } = App.useApp();
@@ -11,21 +11,13 @@ const ServiceEditor = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
+
 
   useEffect(() => {
-    fetchCategories();
     if (id) fetchService();
   }, [id]);
 
-  const fetchCategories = async () => {
-    try {
-      const response = await adminAPI.get('/categories');
-      setCategories(response.data);
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
-    }
-  };
+
 
   const fetchService = async () => {
     try {
@@ -42,11 +34,8 @@ const ServiceEditor = () => {
   const handleSubmit = async (values) => {
     setLoading(true);
     const formData = new FormData();
-    formData.append('title', values.title);
+    formData.append('name', values.name);
     formData.append('description', values.description);
-    formData.append('category', values.category);
-    formData.append('price', values.price);
-    formData.append('faqs', JSON.stringify(values.faqs || []));
     formData.append('isActive', values.isActive || true);
     
     if (fileList.length > 0 && fileList[0].originFileObj) {
@@ -56,10 +45,10 @@ const ServiceEditor = () => {
     try {
       if (id) {
         await servicesAPI.update(id, formData);
-        message.success('Service updated successfully');
+        message.success('Service category updated successfully');
       } else {
         await servicesAPI.create(formData);
-        message.success('Service created successfully');
+        message.success('Service category created successfully');
       }
       navigate('/admin/services');
     } catch (error) {
@@ -74,48 +63,22 @@ const ServiceEditor = () => {
         title={
           <Space>
             <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/admin/services')} />
-            {id ? 'Edit Service' : 'Create New Service'}
+            {id ? 'Edit Service Category' : 'Create New Service Category'}
           </Space>
         }
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Row gutter={24}>
-            <Col span={12}>
-              <Form.Item name="title" label="Service Title" rules={[{ required: true }]}>
-                <Input placeholder="Enter service title" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-                <Select placeholder="Select a category">
-                  {categories.map(category => (
-                    <Select.Option key={category._id} value={category._id}>
-                      {category.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item name="name" label="Service Category Name" rules={[{ required: true }]}>
+            <Input placeholder="Enter service category name" />
+          </Form.Item>
 
           <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-            <Input.TextArea rows={4} placeholder="Detailed description of the service" />
+            <Input.TextArea rows={4} placeholder="Detailed description of the service category" />
           </Form.Item>
 
           <Row gutter={24}>
-            <Col span={8}>
-              <Form.Item name="price" label="Price (₹)" rules={[{ required: true }]}>
-                <InputNumber
-                  style={{ width: '100%' }}
-                  placeholder="Enter price"
-                  min={0}
-                  formatter={value => `₹ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                  parser={value => value.replace(/₹\s?|(,*)/g, '')}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name="image" label="Service Image">
+            <Col span={12}>
+              <Form.Item name="image" label="Category Image" rules={[{ required: !id }]}>
                 <Upload
                   beforeUpload={() => false}
                   maxCount={1}
@@ -127,7 +90,7 @@ const ServiceEditor = () => {
                 </Upload>
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={12}>
               <Form.Item name="isActive" label="Status" valuePropName="checked">
                 <Switch 
                   checkedChildren="Active" 
@@ -138,70 +101,12 @@ const ServiceEditor = () => {
             </Col>
           </Row>
 
-          <Card title="FAQs" style={{ marginBottom: 16 }}>
-            <Form.List name="faqs">
-              {(fields, { add, remove }) => (
-                <>
-                  {fields.map(({ key, name, ...restField }) => (
-                    <Card key={key} size="small" style={{ marginBottom: 16 }}>
-                      <Row gutter={16}>
-                        <Col span={24}>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'question']}
-                            label="Question"
-                            rules={[{ required: true }]}
-                          >
-                            <Input placeholder="Enter FAQ question" />
-                          </Form.Item>
-                        </Col>
-                        <Col span={20}>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'answer']}
-                            label="Answer"
-                            rules={[{ required: true }]}
-                          >
-                            <Input.TextArea rows={3} placeholder="Enter FAQ answer" />
-                          </Form.Item>
-                        </Col>
-                        <Col span={4}>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'order']}
-                            label="Order"
-                          >
-                            <InputNumber min={0} placeholder="0" style={{ width: '100%' }} />
-                          </Form.Item>
-                          <Button
-                            type="dashed"
-                            onClick={() => remove(name)}
-                            danger
-                            style={{ marginTop: 8, width: '100%' }}
-                          >
-                            Remove
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Card>
-                  ))}
-                  <Button
-                    type="dashed"
-                    onClick={() => add({ order: fields.length })}
-                    icon={<UploadOutlined />}
-                    style={{ width: '100%' }}
-                  >
-                    Add FAQ
-                  </Button>
-                </>
-              )}
-            </Form.List>
-          </Card>
+
 
           <div style={{ marginTop: 24 }}>
             <Space>
               <Button type="primary" htmlType="submit" loading={loading} size="large">
-                {id ? 'Update Service' : 'Create Service'}
+                {id ? 'Update Service Category' : 'Create Service Category'}
               </Button>
               <Button onClick={() => navigate('/admin/services')} size="large">
                 Cancel

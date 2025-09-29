@@ -52,3 +52,7 @@ export const testimonialsAPI = {
   create: (data) => userApi.post('/testimonials', data),
 };
 
+export const citiesAPI = {
+  getAll: () => api.get('/cities'),
+};
+

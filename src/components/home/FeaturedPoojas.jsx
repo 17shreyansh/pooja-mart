@@ -34,9 +34,24 @@ const FeaturedPoojas = () => {
     fetchPoojas();
   }, []);
 
+  useEffect(() => {
+    // Listen for city changes
+    const handleStorageChange = () => {
+      fetchPoojas();
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   const fetchPoojas = async () => {
     try {
-      const response = await frontendAPI.getPoojas();
+      const params = {};
+      const savedCity = localStorage.getItem('selectedCity');
+      if (savedCity) {
+        const city = JSON.parse(savedCity);
+        params.city = city._id;
+      }
+      const response = await frontendAPI.getPoojas(params);
       setPoojas(response.data.data);
     } catch (error) {
       console.error('Error fetching poojas:', error);

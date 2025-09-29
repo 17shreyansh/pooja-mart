@@ -34,7 +34,7 @@ const AdminLayout = ({ children, onLogout, admin }) => {
     if (path.includes('/services')) return 'services';
     if (path.includes('/poojas')) return 'poojas';
     if (path.includes('/collections')) return 'collections';
-    if (path.includes('/categories')) return 'categories';
+    if (path.includes('/cities')) return 'cities';
     if (path.includes('/offers')) return 'offers';
     if (path.includes('/user-testimonials')) return 'user-testimonials';
     if (path.includes('/testimonials')) return 'testimonials';
@@ -63,10 +63,10 @@ const AdminLayout = ({ children, onLogout, admin }) => {
   const menuItems = [
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: 'leads', icon: <ContactsOutlined />, label: 'Leads' },
-    { key: 'categories', icon: <SettingOutlined />, label: 'Categories' },
-    { key: 'services', icon: <ToolOutlined />, label: 'Services' },
+    { key: 'services', icon: <ToolOutlined />, label: 'Service Categories' },
     { key: 'poojas', icon: <StarOutlined />, label: 'Poojas' },
     { key: 'collections', icon: <ShoppingOutlined />, label: 'Collections' },
+    { key: 'cities', icon: <ContactsOutlined />, label: 'Cities' },
     { key: 'offers', icon: <StarOutlined />, label: 'Festive Offers' },
     { key: 'testimonials', icon: <MessageOutlined />, label: 'Testimonials' },
     { key: 'user-testimonials', icon: <UserOutlined />, label: 'User Reviews' },

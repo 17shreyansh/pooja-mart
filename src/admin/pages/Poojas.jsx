@@ -47,10 +47,10 @@ const Poojas = () => {
       render: (text) => text ? text.substring(0, 50) + '...' : 'No description'
     },
     { 
-      title: 'Category', 
-      dataIndex: 'category', 
-      key: 'category',
-      render: (category) => category?.name || 'No category'
+      title: 'Service Category', 
+      dataIndex: 'service', 
+      key: 'service',
+      render: (service) => service?.name || 'No service'
     },
     {
       title: 'Packages',

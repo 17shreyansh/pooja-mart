@@ -7,6 +7,7 @@ export { default as LoadingButton } from './LoadingButton';
 export { default as PoojaCard } from './PoojaCard';
 export { default as TestimonialCard } from './TestimonialCard';
 export { default as ThankYouMessage } from './ThankYouMessage';
+export { default as LanguageSelector } from './LanguageSelector';
 
 // Loading Utilities
 export { useLoading } from '../../utils/useLoading';
