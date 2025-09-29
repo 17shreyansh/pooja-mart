@@ -42,6 +42,7 @@ const AdminLayout = ({ children, onLogout, admin }) => {
     if (path.includes('/faqs')) return 'faqs';
     if (path.includes('/pages')) return 'pages';
     if (path.includes('/home-page')) return 'home-page';
+    if (path.includes('/settings')) return 'settings';
     if (path.includes('/newsletter')) return 'newsletter';
     return 'dashboard';
   };
@@ -72,6 +73,7 @@ const AdminLayout = ({ children, onLogout, admin }) => {
     { key: 'faqs', icon: <QuestionCircleOutlined />, label: 'FAQs' },
     { key: 'pages', icon: <FileTextOutlined />, label: 'Pages' },
     { key: 'home-page', icon: <SettingOutlined />, label: 'Home Page Edit' },
+    { key: 'settings', icon: <SettingOutlined />, label: 'Settings' },
     { key: 'newsletter', icon: <MailOutlined />, label: 'Newsletter' },
   ];
   

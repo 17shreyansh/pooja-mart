@@ -1,9 +1,12 @@
 import React from 'react';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import WhatsAppButton from './WhatsAppButton';
+import { useWhatsApp } from '../../utils/WhatsAppContext';
 
 const PoojaCard = ({ image, title, description, id, slug, type = 'pooja', onClick }) => {
   const navigate = useNavigate();
+  const { whatsappNumber } = useWhatsApp();
   
   const handleCardClick = () => {
     if (onClick) {
@@ -102,31 +105,38 @@ const PoojaCard = ({ image, title, description, id, slug, type = 'pooja', onClic
             </p>
           </div>
           
-          <Button
-            type="primary"
-            size="small"
-            style={{
-              background: '#691B19',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '2px 8px',
-              fontSize: 'clamp(10px, 2vw, 12px)',
-              fontFamily: 'Poppins, sans-serif',
-              fontWeight: '400',
-              color: '#F4E2C9',
-              flexShrink: 0,
-              height: 'auto',
-              minHeight: '24px'
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              navigate(`/contact?service=${encodeURIComponent(title)}&type=${type}`);
-              return false;
-            }}
-          >
-            Book Now
-          </Button>
+          <div style={{ display: 'flex', gap: '4px' }}>
+            <Button
+              type="primary"
+              size="small"
+              style={{
+                background: '#691B19',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '2px 8px',
+                fontSize: 'clamp(10px, 2vw, 12px)',
+                fontFamily: 'Poppins, sans-serif',
+                fontWeight: '400',
+                color: '#F4E2C9',
+                flexShrink: 0,
+                height: 'auto',
+                minHeight: '24px'
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate(`/contact?service=${encodeURIComponent(title)}&type=${type}`);
+                return false;
+              }}
+            >
+              {type === 'collection' ? 'Enquiry' : 'Book Now'}
+            </Button>
+            <WhatsAppButton
+              whatsappNumber={whatsappNumber}
+              message={`Hi, I'm interested in ${title}. Please provide more details.`}
+              size="small"
+            />
+          </div>
         </div>
       </div>
     </div>

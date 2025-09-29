@@ -65,6 +65,7 @@ const HeroSection = () => {
       {/* Banner touching navbar - Hidden on mobile */}
       <img
         src={banner}
+
         alt="Banner"
         className="hero-banner"
       />

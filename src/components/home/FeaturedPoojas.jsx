@@ -7,6 +7,8 @@ import featuredBG from '../../assets/featuredBG.png';
 import bottomStrip from '../../assets/bottom-strip.png';
 import { frontendAPI } from '../../utils/api';
 import { API_BASE_URL } from '../../config/api';
+import WhatsAppButton from '../common/WhatsAppButton';
+import { useWhatsApp } from '../../utils/WhatsAppContext';
 
 // Add fonts
 const fontStyles = `
@@ -26,6 +28,7 @@ const { Meta } = Card;
 const FeaturedPoojas = () => {
   const [poojas, setPoojas] = useState([]);
   const navigate = useNavigate();
+  const { whatsappNumber } = useWhatsApp();
 
   useEffect(() => {
     fetchPoojas();
@@ -84,28 +87,43 @@ const FeaturedPoojas = () => {
                       style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover', borderRadius: '10px', background: 'none' }}
                       onError={(e) => { e.target.src = '/src/assets/fp1.jpg'; }}
                     />
-                    <Button
-                      type="primary"
-                      style={{
-                        position: 'absolute',
-                        bottom: '0%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        background: '#FFFFFF1A',
-                        border: '1px solid #828282',
-                        backdropFilter: 'blur(2px)',
-                        color: '#ffffff',
-                        fontWeight: '500',
-                        fontFamily: 'Poppins, sans-serif'
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        navigate(`/contact?service=${encodeURIComponent(pooja.title)}&type=pooja`);
-                      }}
-                    >
-                      Book Now
-                    </Button>
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '0%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      display: 'flex',
+                      gap: '8px'
+                    }}>
+                      <Button
+                        type="primary"
+                        style={{
+                          background: '#FFFFFF1A',
+                          border: '1px solid #828282',
+                          backdropFilter: 'blur(2px)',
+                          color: '#ffffff',
+                          fontWeight: '500',
+                          fontFamily: 'Poppins, sans-serif'
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          navigate(`/contact?service=${encodeURIComponent(pooja.title)}&type=pooja`);
+                        }}
+                      >
+                        Book Now
+                      </Button>
+                      <WhatsAppButton
+                        whatsappNumber={whatsappNumber}
+                        message={`Hi, I'm interested in ${pooja.title} pooja. Please provide more details.`}
+                        size="small"
+                        style={{
+                          background: '#25D366AA',
+                          backdropFilter: 'blur(2px)',
+                          border: '1px solid #25D366'
+                        }}
+                      />
+                    </div>
                   </div>
                 }
                 style={{ 

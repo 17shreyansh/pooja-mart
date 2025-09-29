@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { frontendAPI } from '../../utils/api';
+import WhatsAppButton from '../common/WhatsAppButton';
+import { useWhatsApp } from '../../utils/WhatsAppContext';
 
 // Add fonts
 const fontStyles = `
@@ -23,6 +25,7 @@ const { Meta } = Card;
 const OurServices = () => {
   const [services, setServices] = useState([]);
   const navigate = useNavigate();
+  const { whatsappNumber } = useWhatsApp();
 
   useEffect(() => {
     fetchServices();
@@ -72,28 +75,43 @@ const OurServices = () => {
                       style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '20px' }}
                       onError={(e) => { e.target.src = '/src/assets/ser1.jpg'; }}
                     />
-                    <Button
-                      type="primary"
-                      style={{
-                        position: 'absolute',
-                        bottom: '0%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        background: '#FFFFFF1A',
-                        border: '1px solid #828282',
-                        backdropFilter: 'blur(2px)',
-                        color: '#ffffff',
-                        fontWeight: '500',
-                        fontFamily: 'Poppins, sans-serif'
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        navigate(`/contact?service=${encodeURIComponent(service.title)}&type=service`);
-                      }}
-                    >
-                      Book Now
-                    </Button>
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '0%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      display: 'flex',
+                      gap: '8px'
+                    }}>
+                      <Button
+                        type="primary"
+                        style={{
+                          background: '#FFFFFF1A',
+                          border: '1px solid #828282',
+                          backdropFilter: 'blur(2px)',
+                          color: '#ffffff',
+                          fontWeight: '500',
+                          fontFamily: 'Poppins, sans-serif'
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          navigate(`/contact?service=${encodeURIComponent(service.title)}&type=service`);
+                        }}
+                      >
+                        Book Now
+                      </Button>
+                      <WhatsAppButton
+                        whatsappNumber={whatsappNumber}
+                        message={`Hi, I'm interested in ${service.title} service. Please provide more details.`}
+                        size="small"
+                        style={{
+                          background: '#25D366AA',
+                          backdropFilter: 'blur(2px)',
+                          border: '1px solid #25D366'
+                        }}
+                      />
+                    </div>
                   </div>
                 }
                 style={{ 
