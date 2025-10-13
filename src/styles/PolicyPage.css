@@ -1,0 +1,84 @@
+/* Policy Page Styles */
+.policy-content h1 {
+  color: #5c1f1f !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 700 !important;
+  margin-bottom: 30px !important;
+  border-bottom: 3px solid #5c1f1f;
+  padding-bottom: 15px;
+}
+
+.policy-content h2 {
+  color: #5c1f1f !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 600 !important;
+  margin-top: 40px !important;
+  margin-bottom: 20px !important;
+  font-size: 1.5rem !important;
+}
+
+.policy-content h3 {
+  color: #7d2d2d !important;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+  margin-top: 30px !important;
+  margin-bottom: 15px !important;
+  font-size: 1.2rem !important;
+}
+
+.policy-content p {
+  color: #333 !important;
+  font-family: 'Poppins', sans-serif !important;
+  line-height: 1.8 !important;
+  margin-bottom: 20px !important;
+  font-size: 16px !important;
+}
+
+.policy-content ul, .policy-content ol {
+  margin: 20px 0 !important;
+  padding-left: 30px !important;
+}
+
+.policy-content li {
+  color: #333 !important;
+  font-family: 'Poppins', sans-serif !important;
+  line-height: 1.7 !important;
+  margin-bottom: 10px !important;
+  font-size: 16px !important;
+}
+
+.policy-content ul li {
+  list-style-type: disc !important;
+}
+
+.policy-content ol li {
+  list-style-type: decimal !important;
+}
+
+.policy-content strong {
+  color: #5c1f1f !important;
+  font-weight: 600 !important;
+}
+
+.policy-content em {
+  font-style: italic !important;
+  color: #666 !important;
+}
+
+@media (max-width: 768px) {
+  .policy-content h1 {
+    font-size: 1.8rem !important;
+  }
+  
+  .policy-content h2 {
+    font-size: 1.3rem !important;
+  }
+  
+  .policy-content h3 {
+    font-size: 1.1rem !important;
+  }
+  
+  .policy-content p, .policy-content li {
+    font-size: 15px !important;
+  }
+}

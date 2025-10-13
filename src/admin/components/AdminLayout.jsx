@@ -42,6 +42,7 @@ const AdminLayout = ({ children, onLogout, admin }) => {
     if (path.includes('/faqs')) return 'faqs';
     if (path.includes('/pages')) return 'pages';
     if (path.includes('/home-page')) return 'home-page';
+
     if (path.includes('/settings')) return 'settings';
     if (path.includes('/newsletter')) return 'newsletter';
     return 'dashboard';
@@ -63,9 +64,9 @@ const AdminLayout = ({ children, onLogout, admin }) => {
   const menuItems = [
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: 'leads', icon: <ContactsOutlined />, label: 'Leads' },
-    { key: 'services', icon: <ToolOutlined />, label: 'Service Categories' },
+    { key: 'services', icon: <ToolOutlined />, label: 'Services' },
     { key: 'poojas', icon: <StarOutlined />, label: 'Poojas' },
-    { key: 'collections', icon: <ShoppingOutlined />, label: 'Collections' },
+    { key: 'collections', icon: <ShoppingOutlined />, label: 'Shop' },
     { key: 'cities', icon: <ContactsOutlined />, label: 'Cities' },
     { key: 'offers', icon: <StarOutlined />, label: 'Festive Offers' },
     { key: 'testimonials', icon: <MessageOutlined />, label: 'Testimonials' },

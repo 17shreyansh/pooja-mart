@@ -21,6 +21,7 @@ userApi.interceptors.request.use((config) => {
 });
 
 export const frontendAPI = {
+  get: (url) => api.get(url),
   getPoojas: (params) => api.get('/poojas', { params }),
   getPoojaById: (id) => api.get(`/poojas/${id}`),
   getPoojaBySlug: (slug) => api.get(`/poojas/slug/${slug}`),
@@ -54,5 +55,25 @@ export const testimonialsAPI = {
 
 export const citiesAPI = {
   getAll: () => api.get('/cities'),
+};
+
+// Admin API (with admin auth)
+const adminApi = axios.create({
+  baseURL: `${API_BASE_URL}/api`,
+});
+
+adminApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('adminToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const adminAPI = {
+  get: (url) => adminApi.get(url),
+  post: (url, data) => adminApi.post(url, data),
+  put: (url, data) => adminApi.put(url, data),
+  delete: (url) => adminApi.delete(url),
 };
 

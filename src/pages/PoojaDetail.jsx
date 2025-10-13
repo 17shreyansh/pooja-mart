@@ -364,40 +364,7 @@ const PoojaDetail = () => {
                           {pkg.description}
                         </p>
 
-                        {pkg.includes && pkg.includes.length > 0 && (
-                          <div style={{ marginBottom: '20px' }}>
-                            <h4 style={{
-                              fontSize: '16px',
-                              fontWeight: '600',
-                              color: '#691B19',
-                              marginBottom: '12px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '6px'
-                            }}>
-                              <CheckCircleOutlined style={{ color: '#52c41a' }} />
-                              What's Included:
-                            </h4>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
-                              {pkg.includes.map((item, i) => (
-                                <div key={i} style={{
-                                  background: '#fff',
-                                  color: '#691B19',
-                                  padding: '8px 12px',
-                                  borderRadius: '8px',
-                                  fontSize: '14px',
-                                  border: '1px solid rgba(105, 27, 25, 0.15)',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '6px'
-                                }}>
-                                  <CheckCircleOutlined style={{ color: '#52c41a', fontSize: '12px' }} />
-                                  {item}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+
 
                         {pkg.collections && pkg.collections.length > 0 && (
                           <div style={{ marginBottom: '24px' }}>

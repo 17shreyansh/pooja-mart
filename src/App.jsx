@@ -53,7 +53,7 @@ function App() {
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/collection/:slug" element={<CollectionDetail />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/policy/:slug" element={<PolicyPage />} />
+                <Route path="/policy/:type" element={<PolicyPage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/user/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />

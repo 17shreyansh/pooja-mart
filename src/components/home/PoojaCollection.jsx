@@ -29,7 +29,7 @@ const PoojaCollection = () => {
       const response = await frontendAPI.getCollections();
       setPoojas(response.data.data);
     } catch (error) {
-      console.error('Error fetching pooja collection:', error);
+      console.error('Error fetching shop items:', error);
     }
   };
 
@@ -57,7 +57,7 @@ const PoojaCollection = () => {
           fontFamily: 'Bastoni',
           textAlign: 'center'
         }}>
-          Pooja Collection
+          Shop
         </h2>
 
         <Row gutter={[8, 12]} justify="center">

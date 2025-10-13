@@ -262,20 +262,7 @@ const PoojaEditor = () => {
                             Remove
                           </Button>
                         </Col>
-                        <Col span={12}>
-                          <Form.Item
-                            {...restField}
-                            name={[name, 'includes']}
-                            label="What's Included"
-                          >
-                            <Select
-                              mode="tags"
-                              placeholder="Add items included in this package"
-                              style={{ width: '100%' }}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={12}>
+                        <Col span={24}>
                           <Form.Item
                             {...restField}
                             name={[name, 'collections']}

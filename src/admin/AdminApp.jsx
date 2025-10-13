@@ -18,7 +18,7 @@ import Newsletter from './pages/Newsletter';
 import Offers from './pages/Offers';
 import HomePageEditor from './pages/HomePageEditor';
 import Cities from './pages/Cities';
-
+import PageEditor from './pages/PageEditor';
 import Settings from './pages/Settings';
 import AdminLayout from './components/AdminLayout';
 import { authAPI } from './utils/api';
@@ -122,6 +122,7 @@ const AdminApp = () => {
               <Route path="/admin/offers" element={<Offers />} />
               <Route path="/admin/home-page" element={<HomePageEditor />} />
               <Route path="/admin/cities" element={<Cities />} />
+              <Route path="/admin/pages/edit/:slug" element={<PageEditor />} />
               <Route path="/admin/settings" element={<Settings />} />
 
             </Routes>

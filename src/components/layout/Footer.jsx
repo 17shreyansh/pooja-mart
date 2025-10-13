@@ -127,7 +127,7 @@ const Footer = () => {
               <Link to="/policy/terms-conditions" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Terms and Conditions</Link>
               <Link to="/policy/privacy-policy" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Privacy Policy</Link>
               <Link to="/policy/shipping-policy" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>Shipping Policy</Link>
-              <Link to="/contact" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>FAQs</Link>
+              <Link to="/policy/faqs" style={{ color: "#5c1f1f", textDecoration: "none", fontSize: "14px", lineHeight: "1.5" }}>FAQs</Link>
             </div>
           </Col>
 

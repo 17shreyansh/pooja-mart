@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal } from 'antd';
+import { Modal, Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
@@ -8,6 +9,7 @@ import 'swiper/css/pagination';
 const OffersPopup = () => {
   const [offers, setOffers] = useState([]);
   const [visible, setVisible] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchOffers();
@@ -15,7 +17,7 @@ const OffersPopup = () => {
 
   const fetchOffers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/offers');
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/offers`);
       const data = await response.json();
       
       if (data.success && data.offers.length > 0) {
@@ -32,6 +34,14 @@ const OffersPopup = () => {
 
   if (offers.length === 0) return null;
 
+  const getOfferLink = (offerType) => {
+    switch (offerType) {
+      case 'pooja': return '/poojas';
+      case 'collection': return '/shop';
+      default: return '/contact';
+    }
+  };
+
   return (
     <Modal
       open={visible}
@@ -46,30 +56,37 @@ const OffersPopup = () => {
       }}
       closeIcon={<span style={{ color: 'white', fontSize: '20px', fontWeight: 'bold' }}>×</span>}
     >
-      {offers.length === 1 ? (
-        <img 
-          src={`http://localhost:5000${offers[0].image}`} 
-          alt={offers[0].title}
-          style={{ width: '100%', height: 'auto', display: 'block' }}
-        />
-      ) : (
-        <Swiper
-          modules={[Pagination, Autoplay]}
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 3000 }}
-          loop
-        >
-          {offers.map((offer, index) => (
-            <SwiperSlide key={index}>
+      <Swiper
+        modules={[Pagination, Autoplay]}
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 3000 }}
+        loop={offers.length > 1}
+      >
+        {offers.map((offer, index) => (
+          <SwiperSlide key={index}>
+            <div style={{ position: 'relative' }}>
               <img 
-                src={`http://localhost:5000${offer.image}`} 
+                src={`${import.meta.env.VITE_API_BASE_URL}${offer.image}`} 
                 alt={offer.title}
                 style={{ width: '100%', height: 'auto', display: 'block' }}
               />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      )}
+              <div style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)' }}>
+                <Button 
+                  type="primary" 
+                  size="large"
+                  style={{ background: '#691B19', border: 'none' }}
+                  onClick={() => {
+                    navigate(getOfferLink(offer.offerType));
+                    setVisible(false);
+                  }}
+                >
+                  {offer.buttonText || 'View Offer'}
+                </Button>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </Modal>
   );
 };

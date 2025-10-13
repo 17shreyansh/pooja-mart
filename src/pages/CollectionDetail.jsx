@@ -57,7 +57,7 @@ const CollectionDetail = () => {
         textAlign: 'center',
         fontFamily: 'Poppins, sans-serif'
       }}>
-        <h2 style={{ color: '#691B19', marginBottom: '20px' }}>Collection not found</h2>
+        <h2 style={{ color: '#691B19', marginBottom: '20px' }}>Shop item not found</h2>
         <Button 
           onClick={() => navigate('/shop')}
           style={{
@@ -127,7 +127,7 @@ const CollectionDetail = () => {
                 marginBottom: '20px'
               }}
             >
-              {collection.category?.name || collection.category}
+              {collection.service?.name || 'Service'}
             </Tag>
             
             <h1 style={{
@@ -240,8 +240,8 @@ const CollectionDetail = () => {
                   <Row gutter={[16, 16]}>
                     <Col span={12}>
                       <div>
-                        <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>Category</p>
-                        <p style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500' }}>{collection.category?.name || collection.category}</p>
+                        <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>Service</p>
+                        <p style={{ margin: 0, color: '#333', fontSize: '16px', fontWeight: '500' }}>{collection.service?.name || 'Service'}</p>
                       </div>
                     </Col>
                     <Col span={12}>
@@ -286,7 +286,7 @@ const CollectionDetail = () => {
                 margin: '0 auto',
                 lineHeight: '1.6'
               }}>
-                Detailed information about this sacred collection item
+                Detailed information about this sacred shop item
               </p>
             </div>
             
@@ -558,7 +558,7 @@ const CollectionDetail = () => {
             marginBottom: '20px',
             lineHeight: '1.2'
           }}>
-            Add to Your Sacred Collection
+            Add to Your Sacred Items
           </h2>
           <p style={{
             fontSize: '18px',

@@ -18,6 +18,7 @@ import {
 } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import { offersAPI } from '../utils/api';
+import { API_BASE_URL } from '../../config/api';
 
 const { TextArea } = Input;
 
@@ -81,6 +82,7 @@ const Offers = () => {
       description: offer.description,
       offerType: offer.offerType,
       discountPercentage: offer.discountPercentage,
+      buttonText: offer.buttonText,
       isActive: offer.isActive
     });
     
@@ -89,7 +91,7 @@ const Offers = () => {
         uid: '-1',
         name: 'current-image',
         status: 'done',
-        url: `http://localhost:5000${offer.image}`
+        url: `${API_BASE_URL}${offer.image}`
       }]);
     }
     
@@ -131,7 +133,7 @@ const Offers = () => {
         <Image
           width={60}
           height={60}
-          src={`http://localhost:5000${image}`}
+          src={`${API_BASE_URL}${image}`}
           style={{ objectFit: 'cover', borderRadius: 4 }}
         />
       ),
@@ -146,8 +148,9 @@ const Offers = () => {
       dataIndex: 'offerType',
       key: 'offerType',
       render: (type) => {
-        const colors = { pooja: 'blue', service: 'purple', collection: 'green' };
-        return <Tag color={colors[type]}>{type.toUpperCase()}</Tag>;
+        const colors = { pooja: 'blue', collection: 'green' };
+        const labels = { pooja: 'Pooja', collection: 'Shop Item' };
+        return <Tag color={colors[type]}>{labels[type]}</Tag>;
       },
     },
     {
@@ -156,6 +159,13 @@ const Offers = () => {
       key: 'discountPercentage',
       render: (discount) => discount ? `${discount}%` : '-',
     },
+    {
+      title: 'Button Text',
+      dataIndex: 'buttonText',
+      key: 'buttonText',
+      render: (text) => text || '-',
+    },
+
     {
       title: 'Status',
       dataIndex: 'isActive',
@@ -255,8 +265,7 @@ const Offers = () => {
               placeholder="Select offer type"
               options={[
                 { value: 'pooja', label: 'Pooja' },
-                { value: 'service', label: 'Service' },
-                { value: 'collection', label: 'Collection' }
+                { value: 'collection', label: 'Shop Item' }
               ]}
             />
           </Form.Item>
@@ -271,6 +280,13 @@ const Offers = () => {
               placeholder="Enter discount percentage"
               style={{ width: '100%' }}
             />
+          </Form.Item>
+
+          <Form.Item
+            name="buttonText"
+            label="Button Text"
+          >
+            <Input placeholder="e.g., View Offer, Book Now" />
           </Form.Item>
 
           <Form.Item

@@ -76,14 +76,14 @@ const Services = () => {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Card title="Service Categories Management" extra={
+      <Card title="Services Management" extra={
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/admin/services/new')}>
-          Add Service Category
+          Add Service
         </Button>
       }>
         <div style={{ marginBottom: 16 }}>
           <Input.Search
-            placeholder="Search service categories..."
+            placeholder="Search services..."
             value={filters.search}
             onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             style={{ width: 300 }}

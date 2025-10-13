@@ -11,19 +11,19 @@ const CollectionEditor = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
-    fetchCategories();
+    fetchServices();
     if (id) fetchCollection();
   }, [id]);
 
-  const fetchCategories = async () => {
+  const fetchServices = async () => {
     try {
-      const response = await adminAPI.get('/categories');
-      setCategories(response.data);
+      const response = await adminAPI.get('/services');
+      setServices(response.data.data);
     } catch (error) {
-      console.error('Failed to fetch categories:', error);
+      console.error('Failed to fetch services:', error);
     }
   };
 
@@ -39,7 +39,7 @@ const CollectionEditor = () => {
         });
       }
     } catch (error) {
-      message.error('Failed to fetch collection');
+      message.error('Failed to fetch shop item');
     }
   };
 
@@ -48,7 +48,7 @@ const CollectionEditor = () => {
     const formData = new FormData();
     formData.append('title', values.title);
     formData.append('description', values.description);
-    formData.append('category', values.category);
+    formData.append('service', values.service);
     formData.append('price', values.price);
     formData.append('stock', values.stock);
 
@@ -63,10 +63,10 @@ const CollectionEditor = () => {
     try {
       if (id) {
         await poojaCollectionAPI.update(id, formData);
-        message.success('Collection updated successfully');
+        message.success('Shop item updated successfully');
       } else {
         await poojaCollectionAPI.create(formData);
-        message.success('Collection created successfully');
+        message.success('Shop item created successfully');
       }
       navigate('/admin/collections');
     } catch (error) {
@@ -81,23 +81,23 @@ const CollectionEditor = () => {
         title={
           <Space>
             <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/admin/collections')} />
-            {id ? 'Edit Collection' : 'Create New Collection'}
+            {id ? 'Edit Shop Item' : 'Create New Shop Item'}
           </Space>
         }
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Row gutter={24}>
             <Col span={12}>
-              <Form.Item name="title" label="Collection Title" rules={[{ required: true }]}>
-                <Input placeholder="Enter collection title" />
+              <Form.Item name="title" label="Item Title" rules={[{ required: true }]}>
+                <Input placeholder="Enter item title" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-                <Select placeholder="Select a category">
-                  {categories.map(category => (
-                    <Select.Option key={category._id} value={category._id}>
-                      {category.name}
+              <Form.Item name="service" label="Service" rules={[{ required: true }]}>
+                <Select placeholder="Select a service">
+                  {services.map(service => (
+                    <Select.Option key={service._id} value={service._id}>
+                      {service.name}
                     </Select.Option>
                   ))}
                 </Select>
@@ -106,7 +106,7 @@ const CollectionEditor = () => {
           </Row>
 
           <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-            <Input.TextArea rows={4} placeholder="Detailed description of the collection" />
+            <Input.TextArea rows={4} placeholder="Detailed description of the item" />
           </Form.Item>
 
           <Row gutter={24}>
@@ -141,7 +141,7 @@ const CollectionEditor = () => {
             </Col>
           </Row>
 
-          <Form.Item name="image" label="Collection Image">
+          <Form.Item name="image" label="Item Image">
             <Upload
               beforeUpload={() => false}
               maxCount={1}
@@ -266,7 +266,7 @@ const CollectionEditor = () => {
           
           <Space>
             <Button type="primary" htmlType="submit" loading={loading} size="large">
-              {id ? 'Update Collection' : 'Create Collection'}
+              {id ? 'Update Shop Item' : 'Create Shop Item'}
             </Button>
             <Button onClick={() => navigate('/admin/collections')} size="large">
               Cancel

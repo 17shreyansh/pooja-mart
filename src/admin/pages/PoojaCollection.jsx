@@ -47,10 +47,10 @@ const PoojaCollection = () => {
       render: (text) => text ? text.substring(0, 50) + '...' : 'No description'
     },
     { 
-      title: 'Category', 
-      dataIndex: 'category', 
-      key: 'category',
-      render: (category) => category?.name || 'No category'
+      title: 'Service', 
+      dataIndex: 'service', 
+      key: 'service',
+      render: (service) => service?.name || 'No service'
     },
     { 
       title: 'Price', 
@@ -83,7 +83,7 @@ const PoojaCollection = () => {
       render: (_, record) => (
         <>
           <Button icon={<EditOutlined />} onClick={() => navigate(`/admin/collections/edit/${record._id}`)} style={{ marginRight: 8 }} />
-          <Popconfirm title="Delete this collection?" onConfirm={() => handleDelete(record._id)}>
+          <Popconfirm title="Delete this shop item?" onConfirm={() => handleDelete(record._id)}>
             <Button icon={<DeleteOutlined />} danger />
           </Popconfirm>
         </>
@@ -94,9 +94,9 @@ const PoojaCollection = () => {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h1>Pooja Collection</h1>
+        <h1>Shop Items</h1>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/admin/collections/new')}>
-          Add Collection
+          Add Shop Item
         </Button>
       </div>
 
