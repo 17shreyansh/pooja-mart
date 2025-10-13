@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SearchOutlined } from '@ant-design/icons';
 import { frontendAPI } from '../utils/api';
 import PoojaCard from '../components/common/PoojaCard';
+import LoadingSpinner from '../components/common/LoadingSpinner';
 import featuredBG from '../assets/featuredBG.png';
 import bottomStrip from '../assets/bottom-strip.png';
 
@@ -52,7 +53,7 @@ const Shop = () => {
 
   useEffect(() => {
     fetchItems();
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, sortBy, priceRange]);
 
   // Update URL when filters change
   useEffect(() => {
@@ -66,16 +67,39 @@ const Shop = () => {
   }, [selectedCategory, searchTerm, sortBy, priceRange, currentPage, setSearchParams]);
 
   const fetchItems = async () => {
+    setLoading(true);
     try {
       const params = {};
       if (searchTerm) params.search = searchTerm;
       if (selectedCategory) params.category = selectedCategory;
       
-      const response = await frontendAPI.getCollections(params);
-      let itemData = response.data.data || [];
+      console.log('Fetching collections with params:', params);
+      let response;
+      let itemData = [];
+      let categoriesData = [];
+      
+      try {
+        // Try to fetch collections first
+        response = await frontendAPI.getCollections(params);
+        console.log('Collections API Response:', response.data);
+        itemData = response.data.data || response.data || [];
+        categoriesData = response.data.services || response.data.categories || [];
+      } catch (collectionError) {
+        console.log('Collections not available, trying poojas:', collectionError.message);
+        // Fallback to poojas if collections fail
+        try {
+          response = await frontendAPI.getPoojas(params);
+          console.log('Poojas API Response:', response.data);
+          itemData = response.data.data || response.data || [];
+          categoriesData = response.data.categories || [];
+        } catch (poojaError) {
+          console.error('Both collections and poojas failed:', poojaError.message);
+          throw poojaError;
+        }
+      }
       
       // Apply price filter
-      if (priceRange) {
+      if (priceRange && itemData.length > 0) {
         const [min, max] = priceRange.split('-').map(Number);
         itemData = itemData.filter(item => {
           const price = item.price || 0;
@@ -87,25 +111,31 @@ const Shop = () => {
       }
       
       // Sort data
-      itemData.sort((a, b) => {
-        switch (sortBy) {
-          case 'price-low':
-            return (a.price || 0) - (b.price || 0);
-          case 'price-high':
-            return (b.price || 0) - (a.price || 0);
-          case 'name':
-            return a.title.localeCompare(b.title);
-          case 'oldest':
-            return new Date(a.createdAt) - new Date(b.createdAt);
-          default: // newest
-            return new Date(b.createdAt) - new Date(a.createdAt);
-        }
-      });
+      if (itemData.length > 0) {
+        itemData.sort((a, b) => {
+          switch (sortBy) {
+            case 'price-low':
+              return (a.price || 0) - (b.price || 0);
+            case 'price-high':
+              return (b.price || 0) - (a.price || 0);
+            case 'name':
+              return (a.title || '').localeCompare(b.title || '');
+            case 'oldest':
+              return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+            default: // newest
+              return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+          }
+        });
+      }
       
       setItems(itemData);
-      setCategories(response.data.categories || []);
+      setCategories(categoriesData);
+      console.log('Final items set:', itemData.length, 'items');
+      console.log('Categories data:', categoriesData);
     } catch (error) {
       console.error('Error fetching items:', error);
+      setItems([]);
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -128,12 +158,16 @@ const Shop = () => {
     return (
       <div style={{ 
         padding: '120px 20px', 
-        textAlign: 'center', 
-        fontFamily: 'Poppins, sans-serif',
-        fontSize: '18px',
-        color: '#6B1E1E'
+        minHeight: '60vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
       }}>
-        Loading...
+        <LoadingSpinner 
+          size="large" 
+          message="Loading Shop Items..." 
+          showMessage={true}
+        />
       </div>
     );
   }
@@ -161,7 +195,7 @@ const Shop = () => {
             marginBottom: '20px',
             fontFamily: 'Bastoni'
           }}>
-            Shop Pooja Items
+            Shop Pooja Collections
           </h1>
           <p style={{
             fontSize: '18px',
@@ -270,22 +304,26 @@ const Shop = () => {
             >
               All Categories
             </Button>
-            {categories.map((category) => (
-              <Button 
-                key={category._id || category} 
-                onClick={() => setSelectedCategory(category._id || category)}
-                style={{
-                  padding: '8px 20px',
-                  borderRadius: '20px',
-                  border: '1px solid #691B19',
-                  background: selectedCategory === (category._id || category) ? '#691B19' : 'white',
-                  color: selectedCategory === (category._id || category) ? 'white' : '#691B19',
-                  fontSize: '14px'
-                }}
-              >
-                {category.name || category}
-              </Button>
-            ))}
+            {categories.map((category) => {
+              const categoryId = typeof category === 'string' ? category : category._id;
+              const categoryName = typeof category === 'string' ? category : category.name;
+              return (
+                <Button 
+                  key={categoryId}
+                  onClick={() => setSelectedCategory(categoryId)}
+                  style={{
+                    padding: '8px 20px',
+                    borderRadius: '20px',
+                    border: '1px solid #691B19',
+                    background: selectedCategory === categoryId ? '#691B19' : 'white',
+                    color: selectedCategory === categoryId ? 'white' : '#691B19',
+                    fontSize: '14px'
+                  }}
+                >
+                  {String(categoryName)}
+                </Button>
+              );
+            })}
           </div>
         </div>
       </section>

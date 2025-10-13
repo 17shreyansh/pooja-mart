@@ -45,23 +45,23 @@
   position: absolute;
   border-radius: 50%;
   border: 3px solid transparent;
-  border-top: 3px solid #ff6b35;
+  border-top: 3px solid #6B1E1E;
   animation: spin 1.2s linear infinite;
 }
 
 .spinner-ring:nth-child(1) {
-  border-top-color: #ff6b35;
+  border-top-color: #6B1E1E;
   animation-delay: 0s;
 }
 
 .spinner-ring:nth-child(2) {
-  border-top-color: #fbbf24;
+  border-top-color: #691B19;
   animation-delay: -0.4s;
   transform: scale(0.8);
 }
 
 .spinner-ring:nth-child(3) {
-  border-top-color: #f7931e;
+  border-top-color: #8B2635;
   animation-delay: -0.8s;
   transform: scale(0.6);
 }
@@ -102,13 +102,13 @@
   font-family: 'Poppins', sans-serif;
   font-size: 16px;
   font-weight: 500;
-  color: #333;
+  color: #6B1E1E;
   margin: 0;
   text-align: center;
 }
 
 .loading-overlay .loading-message {
-  color: #333;
+  color: #6B1E1E;
 }
 
 /* Animation */
