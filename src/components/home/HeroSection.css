@@ -17,6 +17,7 @@
   width: auto;
   z-index: 2;
   transform: rotate(-180deg);
+  transform: scaleY(-1);
 }
 
 .hero-row {
